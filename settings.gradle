@@ -1,0 +1,5 @@
+rootProject.name = 'musicAcademy'
+include 'core'
+include 'api'
+include 'batch'
+include 'security'
