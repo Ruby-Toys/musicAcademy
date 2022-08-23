@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.function.SingletonSupplier;
 import ruby.api.exception.account.UserBadCredentialsException;
 import ruby.api.exception.account.UserRoleWaitingException;
 import ruby.api.exception.account.UsernameSameException;
@@ -19,6 +20,7 @@ import ruby.core.repository.AccountRepository;
 
 import javax.servlet.http.HttpSession;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,8 +79,6 @@ public class AccountService {
     }
 
     private Collection<? extends GrantedAuthority> authorities(AccountRole role) {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return Collections.singleton(() -> "ROLE_" + role.name());
     }
-
-
 }

@@ -8,4 +8,5 @@ public class StudentSearch {
 
     private String word;
     private int page;
+    public static int PAGE_SIZE = 15;
 }

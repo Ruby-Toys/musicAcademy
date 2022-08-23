@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import ruby.api.request.student.StudentSearch;
 import ruby.core.domain.Student;
 import ruby.core.domain.enums.AccountRole;
 import ruby.core.domain.enums.Course;
@@ -153,8 +154,8 @@ class StudentGetListTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page").value(1))
                 .andExpect(jsonPath("$.totalCount").value(totalCount))
-                .andExpect(jsonPath("$.pageSize").value(20))
-                .andExpect(jsonPath("$.contents.length()").value(20))
+                .andExpect(jsonPath("$.pageSize").value(StudentSearch.PAGE_SIZE))
+                .andExpect(jsonPath("$.contents.length()").value(StudentSearch.PAGE_SIZE))
                 .andDo(print());
     }
 
@@ -185,8 +186,8 @@ class StudentGetListTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page").value(page))
                 .andExpect(jsonPath("$.totalCount").value(totalCount))
-                .andExpect(jsonPath("$.pageSize").value(20))
-                .andExpect(jsonPath("$.contents.length()").value(20))
+                .andExpect(jsonPath("$.pageSize").value(StudentSearch.PAGE_SIZE))
+                .andExpect(jsonPath("$.contents.length()").value(StudentSearch.PAGE_SIZE))
                 .andDo(print());
     }
 
@@ -196,7 +197,7 @@ class StudentGetListTest {
     void getList() throws Exception {
         // given
         String word = "tes";
-        int page = 3;
+        int page = 4;
         int totalCount = 54;
         List<Student> students = IntStream.range(0, totalCount)
                 .mapToObj(idx -> Student.builder()
@@ -219,8 +220,8 @@ class StudentGetListTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page").value(page))
                 .andExpect(jsonPath("$.totalCount").value(totalCount))
-                .andExpect(jsonPath("$.pageSize").value(20))
-                .andExpect(jsonPath("$.contents.length()").value(14))
+                .andExpect(jsonPath("$.pageSize").value(StudentSearch.PAGE_SIZE))
+                .andExpect(jsonPath("$.contents.length()").value(9))
                 .andDo(print());
     }
 }

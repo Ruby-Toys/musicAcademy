@@ -16,7 +16,7 @@ public class StudentResponse {
     private String phoneNumber;
     private String course;
     private String grade;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createAt;
 
     public StudentResponse(Student student) {

@@ -34,10 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .cors().and()
-                .csrf().disable();
-
+        http.cors().configurationSource(corsConfigurationSource());
+        http.csrf().disable();
 
         /** 페이지 권한 설정 */
         http
@@ -85,5 +83,23 @@ public class SecurityConfig {
         expressionHandler.setRoleHierarchy(roleHierarchy);
 
         return expressionHandler;
+    }
+
+    /**
+     * CORS 설정
+     * @return
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOriginPattern("http://localhost:5173/**");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

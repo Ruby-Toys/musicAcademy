@@ -1,11 +1,11 @@
 <template>
   <el-container class="studentsContainer">
-    <el-input class="input-with-select">
+    <el-input class="input-with-select" v-model="word">
       <template #append>
-        <el-button :icon="Search" />
+        <el-button :icon="Search" @click="search"/>
       </template>
     </el-input>
-    <el-table class="studentTable" :data="tableData">
+    <el-table class="studentTable" :data="students">
       <el-table-column prop="createAt" label="등록일" width="150" />
       <el-table-column prop="name" label="이름" width="150" />
       <el-table-column prop="phoneNumber" label="연락처" />
@@ -14,32 +14,52 @@
       <el-table-column prop="grade" label="등급" width="100"/>
     </el-table>
     <div class="pagination-block">
-      <el-pagination layout="prev, pager, next" :total="tableData.length" :page-size="20" />
+      <el-pagination layout="prev, pager, next" :total="totalCount" :page-size="pageSize" @current-change="getList"/>
     </div>
   </el-container>
 
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import { Search } from '@element-plus/icons-vue'
+import {COURSE} from "/src/js/course";
+import axios from "axios";
 
-const tempDate = () => {
-  const arr = [];
-  // 페이지당 20개 정도가 적당
-  for (let i = 0; i < 367; i++) {
-    arr.push({
-      createAt: '2016-05-07',
-      name: 'Tom' + i,
-      phoneNumber: '010-1111-2222',
-      email: 'temp@naver.com',
-      course: '바이올린',
-      grade: '초급',
-    });
-  }
-  return arr;
+const students = ref([]);
+const word = ref('');
+const searchForm = ref({
+  word: "",
+  page: 1
+})
+const pageSize = ref(10);
+const totalCount = ref(0);
+const getList = (page) => {
+  searchForm.value.page = page;
+  axios.get("/api/students", {params: searchForm.value})
+      .then(res => {
+        const studentsPage = res.data;
+        pageSize.value = studentsPage.pageSize;
+        totalCount.value = studentsPage.totalCount;
+        students.value = [];
+        studentsPage.contents.forEach(student => {
+          student.course = COURSE[student.course].label;
+          students.value.push(student);
+        })
+      })
+      .catch(err => {
+        const result = err.response.data;
+        alert(result.message);
+      });
 }
-const tableData = ref(tempDate());
+const search = () => {
+  searchForm.value.word = word.value;
+  getList(1);
+}
+
+onMounted(() => {
+  getList(1);
+})
 </script>
 
 <style scoped>
