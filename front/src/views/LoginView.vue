@@ -31,7 +31,7 @@ const login = () => {
     password : loginForm.password
   }).then(() => {
     // 로그인에 성공하면 켈린더 스케쥴 페이지로 넘어감!
-    alert("OK!");
+    router.push({name: "schedules"});
   }).catch(err => {
     const result = err.response.data;
     alert(result.message);
