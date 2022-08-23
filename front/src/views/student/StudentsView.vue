@@ -5,14 +5,13 @@
         <el-button :icon="Search" />
       </template>
     </el-input>
-
-
     <el-table class="studentTable" :data="tableData">
-      <el-table-column prop="date" label="등록일" width="180" />
-      <el-table-column prop="name" label="이름" width="180" />
-      <el-table-column prop="address" label="연락처" />
-      <el-table-column prop="address" label="수강과목" />
-      <el-table-column prop="address" label="담당 선생님" />
+      <el-table-column prop="createAt" label="등록일" width="150" />
+      <el-table-column prop="name" label="이름" width="150" />
+      <el-table-column prop="phoneNumber" label="연락처" />
+      <el-table-column prop="email" label="이메일" />
+      <el-table-column prop="course" label="수강과목" width="150"/>
+      <el-table-column prop="grade" label="등급" width="100"/>
     </el-table>
     <div class="pagination-block">
       <el-pagination layout="prev, pager, next" :total="tableData.length" :page-size="20" />
@@ -30,9 +29,12 @@ const tempDate = () => {
   // 페이지당 20개 정도가 적당
   for (let i = 0; i < 367; i++) {
     arr.push({
-      date: '2016-05-07',
+      createAt: '2016-05-07',
       name: 'Tom' + i,
-      address: 'No. 189, Grove St, Los Angeles',
+      phoneNumber: '010-1111-2222',
+      email: 'temp@naver.com',
+      course: '바이올린',
+      grade: '초급',
     });
   }
   return arr;
@@ -59,7 +61,8 @@ const tableData = ref(tempDate());
 
 .studentTable {
   padding-top: 10px;
-  width: 100%;
+  max-width: 1000px;
+  min-width: 900px;
 }
 
 .pagination-block {
