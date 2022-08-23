@@ -18,6 +18,7 @@ import ruby.core.domain.Account;
 import ruby.core.domain.enums.AccountRole;
 import ruby.core.repository.AccountRepository;
 
+import javax.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final HttpSession httpSession;
 
     @Override
     public Account signUp(String name, String password) {
@@ -67,10 +69,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void setAuthentication(Account account) {
+        UserAccount userAccount = new UserAccount(account);
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(
-                        new UserAccount(account), account.getPassword(), authorities(account.getRole()));
+                        userAccount, account.getPassword(), authorities(account.getRole()));
 
+        httpSession.setAttribute("account", userAccount);
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 

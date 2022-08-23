@@ -11,6 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class SecurityConfig {
         /** 페이지 권한 설정 */
         http
                 .authorizeRequests()
-                .mvcMatchers("/signUp", "/login", "/logout").permitAll()
+                .mvcMatchers("/signUp", "/login", "/logout", "/loginCheck").permitAll()
                 .antMatchers("/students/**").hasRole("MANAGER")
                 .antMatchers("/teachers/**").hasRole("MANAGER")
                 .antMatchers("/schedules/**").hasRole("MANAGER")
@@ -51,7 +54,7 @@ public class SecurityConfig {
         // add(get, post), {boardId}/edit (get)
 
         /** 로그인 처리 */
-        http.formLogin().disable();
+//        http.formLogin().disable();
 
         /** 로그아웃 처리 */
         http.logout()

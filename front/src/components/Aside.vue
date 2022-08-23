@@ -19,17 +19,16 @@
   </el-aside>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
-  .el-aside {
-    height: 100vh;
-    color: var(--el-text-color-primary);
-    background: var(--el-color-danger-light-8);
-    border-right: 1px solid crimson;
-  }
-  .el-menu-item span {
-    margin-left: 20px;
-  }
+.el-aside {
+  height: 100vh;
+  color: var(--el-text-color-primary);
+  background: var(--el-color-danger-light-8);
+  border-right: 1px solid crimson;
+}
+.el-menu-item span {
+  margin-left: 20px;
+}
 </style>

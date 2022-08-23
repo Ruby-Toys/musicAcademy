@@ -1,9 +1,6 @@
 <template>
-  <el-menu
-      mode="horizontal"
-      :ellipsis="false"
-  >
-    <span class="header-title">Music Academy</span>
+  <el-menu mode="horizontal" :ellipsis="false">
+    <span class="header-title" @click="moveHome">Music Academy</span>
     <el-menu-item index="1" @click="moveSchedules">스케쥴</el-menu-item>
     <el-menu-item index="2" @click="moveStudents">수강생</el-menu-item>
     <el-menu-item index="3" @click="moveTeachers">선생님</el-menu-item>
@@ -15,25 +12,31 @@
 </template>
 
 <script setup lang="ts">
-
 import router from "@/router";
+import axios from "axios";
 
+const moveHome = () => {
+  router.push({ name: "home" });
+};
 const moveSchedules = () => {
-  router.push({name: "schedules"});
-}
+  router.push({ name: "schedules" });
+};
 const moveStudents = () => {
-  router.push({name: "students"});
-}
+  router.push({ name: "students" });
+};
 const moveTeachers = () => {
-  router.push({name: "teachers"});
-}
+  router.push({ name: "teachers" });
+};
 const movePayments = () => {
-  router.push({name: "payments"});
-}
+  router.push({ name: "payments" });
+};
 const logout = () => {
-  router.push({name: "home"});
-}
-
+  axios
+      .get("/api/logout")
+      .then(() => {
+        router.push({ name: "home" });
+      });
+};
 </script>
 
 <style scoped>
@@ -52,8 +55,8 @@ const logout = () => {
   margin-left: 15px;
 }
 
-.el-menu--horizontal>.el-menu-item.is-active,
-.el-menu--horizontal>.el-menu-item {
+.el-menu--horizontal > .el-menu-item.is-active,
+.el-menu--horizontal > .el-menu-item {
   border-bottom: none;
   height: 60px;
 }

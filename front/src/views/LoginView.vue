@@ -1,9 +1,9 @@
 <template>
   <el-form
-      label-position="top"
-      label-width="100px"
-      :model="loginForm"
-      style="max-width: 460px"
+    label-position="top"
+    label-width="100px"
+    :model="loginForm"
+    style="max-width: 460px"
   >
     <el-form-item label="Name">
       <el-input v-model="loginForm.name" />
@@ -16,34 +16,53 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive} from 'vue'
+import {onMounted, reactive} from "vue";
 import axios from "axios";
 import router from "@/router";
 
 const loginForm = reactive({
-  name: '',
-  password: ''
-})
+  name: "",
+  password: "",
+});
 
 const login = () => {
-  axios.post("/api/login", {
-    name: loginForm.name,
-    password : loginForm.password
-  }).then(() => {
-    // 로그인에 성공하면 켈린더 스케쥴 페이지로 넘어감!
-    router.push({name: "schedules"});
-  }).catch(err => {
-    const result = err.response.data;
-    alert(result.message);
-  })
-}
-</script>
+  axios
+    .post("/api/login", {
+      name: loginForm.name,
+      password: loginForm.password,
+    })
+    .then(() => {
+      // 로그인에 성공하면 켈린더 스케쥴 페이지로 넘어감!
+      router.push({ name: "schedules" });
+    })
+    .catch((err) => {
+      const result = err.response.data;
+      alert(result.message);
+    });
+};
 
+const loginCheck = () => {
+  axios
+      .post("/api/loginCheck")
+      .then((res) => {
+        if (res.data) router.push({ name: "schedules" });
+      });
+}
+
+onMounted(() => {
+  loginCheck();
+})
+
+</script>
 
 <style scoped>
 .el-form {
   width: 400px;
   height: 300px;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }
 
 .el-button {

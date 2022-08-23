@@ -1,9 +1,9 @@
 <template>
   <el-container>
     <el-header>
-      <Header/>
+      <Header />
     </el-header>
-    <el-main>
+    <el-main class="mainContainer">
       <RouterView />
     </el-main>
   </el-container>
@@ -15,7 +15,8 @@ import Aside from "@/components/Aside.vue";
 </script>
 
 <style scoped>
-.el-header, .el-main {
+.el-header,
+.el-main {
   width: 100%;
   padding: 0;
 }
@@ -23,12 +24,8 @@ import Aside from "@/components/Aside.vue";
   box-sizing: border-box;
   height: 60px;
 }
-.el-main {
+.mainContainer {
   height: calc(100vh - 60px);
   padding: 0 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
-
 </style>

@@ -17,10 +17,10 @@ export default defineConfig({
       // "/signUp" : "http://localhost:8080",
       // "/login" : "http://localhost:8080",
       // "/students" : "http://localhost:8080"
-      "/api" : {
+      "/api": {
         target: "http://localhost:8080",
-        rewrite: path => path.replace(/^\/api/, "")
-      }
-    }
-  }
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
 });
