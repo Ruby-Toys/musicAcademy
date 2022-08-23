@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import ruby.core.domain.*;
+import ruby.core.domain.enums.Course;
 import ruby.core.repository.custom.ScheduleRepositoryCustom;
 import ruby.core.repository.custom.StudentRepositoryCustom;
 
@@ -23,12 +24,13 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Schedule> findByWeek(LocalDateTime start, LocalDateTime end) {
+    public List<Schedule> findByCourseAndWeek(Course course, LocalDateTime start, LocalDateTime end) {
 
         return queryFactory.selectFrom(schedule)
                 .leftJoin(schedule.student, student).fetchJoin()
                 .leftJoin(schedule.teacher, teacher).fetchJoin()
-                .where(schedule.appointmentTime.between(start, end))
+                .where(schedule.student.course.eq(course)
+                        .and(schedule.appointmentTime.between(start, end)))
                 .fetch();
     }
 }

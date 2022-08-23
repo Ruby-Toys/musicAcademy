@@ -11,15 +11,18 @@ import java.time.LocalDateTime;
 public class ScheduleResponse {
 
     private Long id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime appointmentTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime start;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime end;
     private String state;
     private String studentName;
     private String teacherName;
 
     public ScheduleResponse(Schedule schedule) {
         this.id = schedule.getId();
-        this.appointmentTime = schedule.getAppointmentTime();
+        this.start = schedule.getAppointmentTime();
+        this.end = schedule.getAppointmentTime().plusHours(1);
         this.state = schedule.getState().name();
         this.studentName = schedule.getStudent().getName();
         this.teacherName = schedule.getTeacher().getName();

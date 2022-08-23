@@ -7,7 +7,7 @@
         <el-menu-item
             v-for="item in COURSE"
             :key="item.value"
-            @click="getSchedules(item.value)"
+            @click="getCourseList(item.value)"
         >
           {{item.label}}
         </el-menu-item>
@@ -28,9 +28,10 @@
 <script lang="ts" setup>
 import Calendar from "@toast-ui/calendar";
 import {COURSE} from "/src/js/course";
-import { onMounted } from "vue";
+import {onMounted, ref} from "vue";
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
+import axios from "axios";
 
 let asideCalendar;
 let mainCalendar;
@@ -76,17 +77,6 @@ const createMainCalendar = () => {
     useDetailPopup: true,
   };
   mainCalendar = new Calendar('#mainCalendar', options);
-
-  mainCalendar.createEvents([
-    {
-      id: "event1",
-      calendarId: "cal2",
-      title: "주간 회의",
-      start: "2022-08-23T13:00:00",
-      end: "2022-08-23T20:00:00",
-      backgroundColor: "#03bd9e",
-    },
-  ]);
 };
 
 const calendarPrev = () => {
@@ -98,15 +88,57 @@ const calendarNext = () => {
   // 화면을 넘기고 기간에 맞는 목록을 조회한다.
 }
 
+const getTodayStr = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+  return  year + (month < 10 ? '-0' : "-") + month + (day < 10 ? '-0' : "-") + day;
+}
+
+const searchForm = ref({
+  course: COURSE.PIANO.value,
+  appointmentTime: getTodayStr()
+})
+const schedules = ref([]);
+
+const getCourseList = (course) => {
+  searchForm.value.course = course;
+  searchForm.value.appointmentTime = getTodayStr();
+  getList();
+}
+
+const getList = () => {
+  axios.get("/api/schedules", {params: searchForm.value})
+      .then(res => {
+        schedules.value = [];
+        res.data.contents.forEach(schedule => {
+          schedules.value.push({
+            id: schedule.id,
+            title: schedule.studentName + " / " + schedule.teacherName,
+            attendees: [schedule.teacherName],
+            start: schedule.start,
+            end: schedule.end,
+            backgroundColor: "#03bd9e",    // Course 에 색상값을 둘 것
+            state: schedule.state
+          });
+        })
+        mainCalendar.createEvents(schedules.value);
+      })
+      .catch(err => {
+        const result = err.response.data;
+        alert(result.message);
+      });
+};
+
 onMounted(() => {
   createAsideCalendar();
   createMainCalendar();
   // 현재 날짜가 속한 주 단위의 기간의 스케쥴을 조회한다.
+  getList();
 });
 
-const getSchedules = (course) => {
-  alert(course);
-};
+
 </script>
 
 <style scoped>
@@ -138,7 +170,7 @@ const getSchedules = (course) => {
 
 .el-main {
   width: calc(100% - 200px);
-  padding: 20px 50px 100px;
+  padding: 20px 10px 100px 50px;
 }
 
 .calendar-nav {

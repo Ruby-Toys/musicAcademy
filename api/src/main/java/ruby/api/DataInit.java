@@ -42,6 +42,7 @@ public class DataInit implements CommandLineRunner {
         initAccount();
         initStudents();
         initTeachers();
+        initSchedules();
     }
 
     public void initAccount() {
@@ -95,8 +96,8 @@ public class DataInit implements CommandLineRunner {
     }
 
     public void initSchedules() {
-        Student student = studentRepository.findAll().get(0);
-        Teacher teacher = teacherRepository.findAll().get(0);
+        Student student1 = studentRepository.findAll().get(0);
+        Teacher teacher1 = teacherRepository.findAll().get(0);
 
         LocalDateTime now = LocalDateTime.now();
         List<Schedule> schedules = IntStream.range(0, 8)
@@ -105,20 +106,23 @@ public class DataInit implements CommandLineRunner {
                                 LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
                                         10 + idx, 0))
                         .state(ScheduleState.NOT_STARTED)
-                        .student(student)
-                        .teacher(teacher)
+                        .student(student1)
+                        .teacher(teacher1)
                         .build()
                 )
                 .collect(Collectors.toList());
         scheduleRepository.saveAll(schedules);
+
+        Student student2 = studentRepository.findAll().get(1);
+        Teacher teacher2 = teacherRepository.findAll().get(1);
         schedules = IntStream.range(0, 8)
                 .mapToObj(idx -> Schedule.builder()
                         .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth() + 7,
+                                LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
                                         10 + idx, 0))
                         .state(ScheduleState.NOT_STARTED)
-                        .student(student)
-                        .teacher(teacher)
+                        .student(student2)
+                        .teacher(teacher2)
                         .build()
                 )
                 .collect(Collectors.toList());

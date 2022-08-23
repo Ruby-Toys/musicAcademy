@@ -12,6 +12,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
+import ruby.api.valid.CoursePattern;
+import ruby.api.valid.DatePattern;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
@@ -101,22 +103,53 @@ class ScheduleGetListTest {
     @Test
     @DisplayName("잘못된 날짜 형식으로 스케쥴 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
-    void getList_wrongDate() throws Exception {
+    void getList_wrongAppointmentTime() throws Exception {
         mockMvc.perform(get("/schedules")
-                        .param("time", "2022 08 30")
+                        .param("course", Course.VIOLIN.name())
+                        .param("appointmentTime", "2022 08 30")
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.message").value(ExceptionController.BIND_EXCEPTION_MESSAGE))
+                .andExpect(jsonPath("$.validation.appointmentTime").value(DatePattern.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("잘못된 과목으로 스케쥴 조회")
+    @WithMockUser(username = "test", roles = "MANAGER")
+    void getList_wrongCourse() throws Exception {
+        mockMvc.perform(get("/schedules")
+                        .param("course", "DRUM")
+                        .param("appointmentTime", "2022-08-30")
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ExceptionController.BIND_EXCEPTION_MESSAGE))
+                .andExpect(jsonPath("$.validation.course").value(CoursePattern.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("수강생이 없는 과목으로 스케쥴 조회")
+    @WithMockUser(username = "test", roles = "MANAGER")
+    void getList_noneCourse() throws Exception {
+        mockMvc.perform(get("/schedules")
+                        .param("course", Course.FLUTE.name())
+                        .param("appointmentTime", "2022-08-30")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents.length()").value(0))
                 .andDo(print());
     }
 
     @Test
     @DisplayName("스케쥴이 없는 기간으로 스케쥴 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
-    void getList_noneSchedule() throws Exception {
+    void getList_noneAppointmentTime() throws Exception {
         mockMvc.perform(get("/schedules")
-                        .param("time", "2022-08-30")
+                        .param("course", Course.VIOLIN.name())
+                        .param("appointmentTime", "2022-08-30")
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents.length()").value(0))
@@ -128,7 +161,8 @@ class ScheduleGetListTest {
     @WithMockUser(username = "test", roles = "MANAGER")
     void getList() throws Exception {
         mockMvc.perform(get("/schedules")
-                        .param("time", "2022-08-23")
+                        .param("course", Course.VIOLIN.name())
+                        .param("appointmentTime", "2022-08-23")
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents.length()").value(8))
