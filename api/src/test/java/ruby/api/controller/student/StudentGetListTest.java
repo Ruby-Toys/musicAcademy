@@ -1,4 +1,4 @@
-package ruby.api.controller;
+package ruby.api.controller.student;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import ruby.api.controller.ExceptionController;
 import ruby.api.request.student.StudentSearch;
 import ruby.core.domain.Student;
-import ruby.core.domain.enums.AccountRole;
 import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.Grade;
 import ruby.core.repository.StudentRepository;

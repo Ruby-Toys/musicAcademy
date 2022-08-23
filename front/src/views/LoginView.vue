@@ -32,7 +32,7 @@ const login = () => {
     .post("/api/login", loginForm, {withCredentials: true})
     .then(() => {
       // 로그인에 성공하면 켈린더 스케쥴 페이지로 넘어감!
-      router.push({ name: "schedules" });
+      router.replace({ name: "schedules" });
     })
     .catch((err) => {
       const result = err.response.data;

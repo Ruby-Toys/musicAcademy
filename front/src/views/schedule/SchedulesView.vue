@@ -15,6 +15,10 @@
 
     </el-aside>
     <el-main>
+      <div class="calendar-nav">
+        <el-button @click="calendarPrev">Prev</el-button>
+        <el-button @click="calendarNext">Next</el-button>
+      </div>
       <div id="mainCalendar">
       </div>
     </el-main>
@@ -25,6 +29,8 @@
 import Calendar from "@toast-ui/calendar";
 import {COURSE} from "/src/js/course";
 import { onMounted } from "vue";
+import 'tui-date-picker/dist/tui-date-picker.css';
+import 'tui-time-picker/dist/tui-time-picker.css';
 
 let asideCalendar;
 let mainCalendar;
@@ -42,6 +48,7 @@ const createAsideCalendar = () => {
         },
       ],
     },
+
   };
   asideCalendar = new Calendar('#asideCalendar', options);
 };
@@ -65,24 +72,36 @@ const createMainCalendar = () => {
         },
       ],
     },
+    useFormPopup: true,
+    useDetailPopup: true,
   };
   mainCalendar = new Calendar('#mainCalendar', options);
 
-  // calendar.createEvents([
-  //   {
-  //     id: "event1",
-  //     calendarId: "cal2",
-  //     title: "주간 회의",
-  //     start: "2022-08-23T13:00:00",
-  //     end: "2022-08-23T20:00:00",
-  //     backgroundColor: "#03bd9e",
-  //   },
-  // ]);
+  mainCalendar.createEvents([
+    {
+      id: "event1",
+      calendarId: "cal2",
+      title: "주간 회의",
+      start: "2022-08-23T13:00:00",
+      end: "2022-08-23T20:00:00",
+      backgroundColor: "#03bd9e",
+    },
+  ]);
 };
+
+const calendarPrev = () => {
+  mainCalendar.prev();
+  // 화면을 넘기고 기간에 맞는 목록을 조회한다.
+}
+const calendarNext = () => {
+  mainCalendar.next();
+  // 화면을 넘기고 기간에 맞는 목록을 조회한다.
+}
 
 onMounted(() => {
   createAsideCalendar();
   createMainCalendar();
+  // 현재 날짜가 속한 주 단위의 기간의 스케쥴을 조회한다.
 });
 
 const getSchedules = (course) => {
@@ -119,12 +138,16 @@ const getSchedules = (course) => {
 
 .el-main {
   width: calc(100% - 200px);
-  padding: 50px 50px 100px;
+  padding: 20px 50px 100px;
+}
+
+.calendar-nav {
+  height: 50px;
 }
 
 #mainCalendar {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 50px);
   min-height: 600px;
 }
 </style>

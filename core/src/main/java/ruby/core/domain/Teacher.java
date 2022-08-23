@@ -1,12 +1,13 @@
 package ruby.core.domain;
 
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ruby.core.domain.enums.Course;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,9 +15,6 @@ import java.time.LocalDateTime;
 @Getter
 public class Teacher extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String name;
     private String email;
     private String phoneNumber;

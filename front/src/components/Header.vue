@@ -34,7 +34,7 @@ const logout = () => {
   axios
       .get("/api/logout")
       .then(() => {
-        router.push({ name: "home" });
+        router.replace({ name: "home" });
       });
 };
 </script>

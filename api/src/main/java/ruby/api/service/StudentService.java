@@ -19,6 +19,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
+    @Transactional(readOnly = true)
     public Page<Student> getList(StudentSearch search) {
         Pageable pageable = PageRequest.of(max(0, search.getPage() - 1), StudentSearch.PAGE_SIZE);
         return studentRepository.findByNameContains(search.getWord(), pageable);

@@ -22,13 +22,15 @@ public class Student extends BaseEntity{
     private Course course;
     @Enumerated(value = EnumType.STRING)
     private Grade grade;
+    private String memo;
 
     @Builder
-    public Student(String name, String email, String phoneNumber, Course course, Grade grade) {
+    public Student(String name, String email, String phoneNumber, Course course, Grade grade, String memo) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.course = course;
         this.grade = grade;
+        this.memo = memo;
     }
 }

@@ -1,11 +1,12 @@
 <template>
   <el-container class="studentsContainer">
+    <h1>Student</h1>
     <el-input class="input-with-select" v-model="word">
       <template #append>
         <el-button :icon="Search" @click="search"/>
       </template>
     </el-input>
-    <el-table class="studentTable" :data="students">
+    <el-table class="studentsTable" :data="students" @row-click="moveInfo">
       <el-table-column prop="createAt" label="등록일" width="150" />
       <el-table-column prop="name" label="이름" width="150" />
       <el-table-column prop="phoneNumber" label="연락처" />
@@ -25,6 +26,7 @@ import {onMounted, ref} from "vue";
 import { Search } from '@element-plus/icons-vue'
 import {COURSE} from "/src/js/course";
 import axios from "axios";
+import router from "@/router";
 
 const students = ref([]);
 const word = ref('');
@@ -56,6 +58,13 @@ const search = () => {
   searchForm.value.word = word.value;
   getList(1);
 }
+const moveInfo = (row) => {
+  router.push({ name: "studentInfo" , params: {studentId: row.id}});
+  // 목록을 조회할 때 상세정보에 해당하는 프로퍼티들도 함께 조회해서 가지고 있는다.
+  // 선택 시 해당 정보를 store 에 저장하고 보여줌.
+  // 상세 조회시 학생의 기본정보 외에 레슨 기록, 메모(특이사항) 을 보여준다.
+  // 레슨 기록은 상세 조회 페이지 진입 시점에 조회한다.
+}
 
 onMounted(() => {
   getList(1);
@@ -78,11 +87,11 @@ onMounted(() => {
   align-items: center;
 }
 
-
-.studentTable {
+.studentsTable {
   padding-top: 10px;
   max-width: 1000px;
   min-width: 900px;
+  cursor: pointer;
 }
 
 .pagination-block {
