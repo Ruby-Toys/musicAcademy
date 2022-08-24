@@ -19,6 +19,7 @@ public class StudentResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createAt;
 
+
     public StudentResponse(Student student) {
         this.id = student.getId();
         this.name = student.getName();

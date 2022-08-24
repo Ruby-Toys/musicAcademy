@@ -1,6 +1,5 @@
 package ruby.api.controller.student;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,8 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StudentGetListTest {
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    ObjectMapper mapper;
     @Autowired
     StudentRepository studentRepository;
 

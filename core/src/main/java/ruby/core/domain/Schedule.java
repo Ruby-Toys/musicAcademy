@@ -23,8 +23,10 @@ public class Schedule {
     @Enumerated(value = EnumType.STRING)
     private ScheduleState state;
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "teacher_id")
     private Teacher teacher;
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "student_id")
     private Student student;
 
     @Builder

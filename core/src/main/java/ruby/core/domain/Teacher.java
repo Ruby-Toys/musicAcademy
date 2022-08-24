@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ruby.core.domain.enums.Course;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,6 +21,8 @@ public class Teacher extends BaseEntity{
     private String phoneNumber;
     @Enumerated(value = EnumType.STRING)
     private Course course;
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+    private List<Schedule> schedules;
 
     @Builder
     public Teacher(String name, String email, String phoneNumber, Course course) {

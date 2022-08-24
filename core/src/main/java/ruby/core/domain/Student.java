@@ -8,6 +8,9 @@ import ruby.core.domain.enums.Grade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static javax.persistence.FetchType.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,6 +26,9 @@ public class Student extends BaseEntity{
     @Enumerated(value = EnumType.STRING)
     private Grade grade;
     private String memo;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Schedule> schedules;
 
     @Builder
     public Student(String name, String email, String phoneNumber, Course course, Grade grade, String memo) {

@@ -7,12 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.util.StringUtils;
+import ruby.core.domain.QSchedule;
 import ruby.core.domain.QStudent;
 import ruby.core.domain.Student;
 import ruby.core.repository.custom.StudentRepositoryCustom;
 
 import java.util.List;
+import java.util.Optional;
 
+import static ruby.core.domain.QSchedule.*;
 import static ruby.core.domain.QStudent.*;
 
 @RequiredArgsConstructor
@@ -38,11 +41,18 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
         return PageableExecutionUtils.getPage(students, pageable, () -> size);
     }
 
+    @Override
+    public Optional<Student> findInfo(Long id) {
+        Student findStudent = queryFactory.selectFrom(student)
+                .join(student, schedule.student).fetchJoin()
+                .where(student.id.eq(id))
+                .distinct()
+                .fetchOne();
+
+        return Optional.ofNullable(findStudent);
+    }
+
     private Predicate searchCondition(String word) {
-        if (word == null) word = "";
-
-        return student.name.contains(word);
-
-//        return student.name.contains(word == null ? "" : word);
+        return word == null ? null : student.name.contains(word);
     }
 }

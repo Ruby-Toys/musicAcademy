@@ -1,22 +1,17 @@
 package ruby.core.repository.impl;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
-import ruby.core.domain.*;
+import ruby.core.domain.Schedule;
 import ruby.core.domain.enums.Course;
 import ruby.core.repository.custom.ScheduleRepositoryCustom;
-import ruby.core.repository.custom.StudentRepositoryCustom;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static ruby.core.domain.QSchedule.*;
+import static ruby.core.domain.QSchedule.schedule;
 import static ruby.core.domain.QStudent.student;
-import static ruby.core.domain.QTeacher.*;
+import static ruby.core.domain.QTeacher.teacher;
 
 @RequiredArgsConstructor
 public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
@@ -29,8 +24,18 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         return queryFactory.selectFrom(schedule)
                 .leftJoin(schedule.student, student).fetchJoin()
                 .leftJoin(schedule.teacher, teacher).fetchJoin()
-                .where(schedule.student.course.eq(course)
-                        .and(schedule.appointmentTime.between(start, end)))
+                .where(
+                        schedule.student.course.eq(course),
+                        schedule.appointmentTime.goe(start),
+                        schedule.appointmentTime.lt(end))
+                .fetch();
+    }
+
+    @Override
+    public List<Schedule> findByStudent(Long id) {
+        return queryFactory.selectFrom(schedule)
+                .leftJoin(schedule.teacher, teacher).fetchJoin()
+                .where(schedule.student.id.eq(id))
                 .fetch();
     }
 }

@@ -1,6 +1,5 @@
 package ruby.api.controller.schedule;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,8 +40,6 @@ class ScheduleGetListTest {
 
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    ObjectMapper mapper;
     @Autowired
     StudentRepository studentRepository;
     @Autowired

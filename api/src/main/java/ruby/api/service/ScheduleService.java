@@ -24,13 +24,17 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<Schedule> getList(ScheduleSearch search) {
-        LocalDateTime now = LocalDateTime.parse(search.getAppointmentTime() + " 10:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        LocalDateTime now = LocalDateTime.parse(search.getAppointmentTime() + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         DayOfWeek dayOfWeek = now.getDayOfWeek();
 
-        LocalDateTime start = SUNDAY.equals(dayOfWeek) ? now.plusDays(1) : now.minusDays(dayOfWeek.ordinal() - 1);
-        LocalDateTime end = SUNDAY.equals(dayOfWeek) ?  now.plusDays(6) : now.plusDays(6 - dayOfWeek.ordinal() - 1);
-        end = end.plusHours(12);
+        LocalDateTime start = SUNDAY.equals(dayOfWeek) ? now : now.minusDays(dayOfWeek.ordinal() - 1);
+        LocalDateTime end = SUNDAY.equals(dayOfWeek) ?  now.plusDays(SUNDAY.ordinal() + 1) : now.plusDays(SUNDAY.ordinal() - dayOfWeek.ordinal());
         // 스케쥴은 시작날짜와 끝날짜를 입력받아 검색한다.
         return scheduleRepository.findByCourseAndWeek(Course.valueOf(search.getCourse()), start, end);
+    }
+
+    public List<Schedule> getListByStudent(Long id) {
+
+        return scheduleRepository.findByStudent(id);
     }
 }

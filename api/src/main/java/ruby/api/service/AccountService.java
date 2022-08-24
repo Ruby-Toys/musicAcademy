@@ -3,15 +3,13 @@ package ruby.api.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.function.SingletonSupplier;
 import ruby.api.exception.account.UserBadCredentialsException;
 import ruby.api.exception.account.UserRoleWaitingException;
-import ruby.api.exception.account.UsernameSameException;
+import ruby.api.exception.account.UserSameException;
 import ruby.api.request.account.AccountLogin;
 import ruby.api.security.UserAccount;
 import ruby.core.domain.Account;
@@ -36,7 +34,7 @@ public class AccountService {
     @Transactional
     public Account signUp(String name, String password) {
         Optional<Account> optionalAccount = accountRepository.findByName(name);
-        if (optionalAccount.isPresent()) throw new UsernameSameException();
+        if (optionalAccount.isPresent()) throw new UserSameException();
 
         Account account = Account.builder()
                 .name(name)

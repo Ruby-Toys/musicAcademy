@@ -9,4 +9,6 @@ import java.util.List;
 public interface ScheduleRepositoryCustom {
 
     List<Schedule> findByCourseAndWeek(Course course, LocalDateTime start, LocalDateTime end);
+
+    List<Schedule> findByStudent(Long id);
 }
