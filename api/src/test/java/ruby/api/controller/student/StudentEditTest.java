@@ -59,7 +59,7 @@ public class StudentEditTest {
 
     @Test
     @DisplayName("잘못된 필드로 수강생 정보 수정")
-    void edit_wrongName() throws Exception {
+    void edit_wrongField() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
         StudentUpdate studentUpdate = StudentUpdate.builder()

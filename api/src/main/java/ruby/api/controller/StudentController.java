@@ -29,6 +29,7 @@ public class StudentController {
     @PostMapping
     public void post(@RequestBody @Valid StudentAdd studentAdd) {
         log.info("post!");
+        studentService.add(studentAdd);
     }
 
     @GetMapping

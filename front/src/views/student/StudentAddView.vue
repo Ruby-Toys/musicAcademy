@@ -63,7 +63,11 @@
       >
         <el-input v-model="student.email" />
       </el-form-item>
-      <el-form-item label="수강과목">
+      <el-form-item
+          prop="course"
+          label="수강과목"
+          :rules="[{required: true}]"
+      >
         <el-select v-model="student.course">
           <el-option
               v-for="course in COURSE"
@@ -73,7 +77,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="등급">
+      <el-form-item
+          prop="grade"
+          label="등급"
+          :rules="[{required: true}]"
+      >
         <el-select v-model="student.grade">
           <el-option
               v-for="grade in GRADE"
@@ -83,7 +91,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="기타">
+      <el-form-item
+          prop="memo"
+          label="특이사항"
+      >
         <el-input v-model="student.memo" type="textarea" resize="false"/>
       </el-form-item>
       <el-form-item>
@@ -99,6 +110,7 @@ import {COURSE} from "/src/js/course";
 import {GRADE} from "/src/js/grade";
 import type {FormInstance} from "element-plus";
 import axios from "axios";
+import router from "@/router";
 
 const formRef = ref<FormInstance>()
 const student = reactive<{
@@ -121,9 +133,12 @@ const studentAddApi = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
-      axios.post("/api/students")
-          .then()
-          .catch();
+      axios.post("/api/students", student)
+          .then(res => router.replace({ name: "students"}))
+          .catch((err) => {
+            const result = err.response.data;
+            alert(result.message);
+          });
       alert("submit!")
     } else {
       alert("error!")

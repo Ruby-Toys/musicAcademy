@@ -79,11 +79,8 @@ const student = ref({...studentStore.getStudent})
 const editStudentApi = () => {
   axios.patch(`/api/students/${student.value.id}`, student.value)
       .then(res => {
-        if (res.status === 200) {
-          // 수정에 성공했을 때 그 내용을 store 에 반영하여 갱신
-          studentStore.set(student.value);
-          alert("수강생 정보가 변경되었습니다.");
-        }
+        studentStore.set(student.value);
+        alert("수강생 정보가 변경되었습니다.");
       })
       .catch((err) => {
         const result = err.response.data;
