@@ -1,11 +1,13 @@
 <template>
   <el-container class="studentsContainer">
     <h1>Student</h1>
-    <el-input class="input-with-select" v-model="word">
-      <template #append>
-        <el-button :icon="Search" @click="search"/>
-      </template>
-    </el-input>
+    <div>
+      <el-input class="input-with-select" v-model="word">
+        <template #append>
+          <el-button :icon="Search" @click="search"/>
+        </template>
+      </el-input>
+    </div>
     <el-table class="studentsTable" :data="students" @row-click="moveInfo">
       <el-table-column prop="createAt" label="등록일" width="150" />
       <el-table-column prop="name" label="이름" width="150" />
@@ -15,7 +17,7 @@
       <el-table-column prop="grade" label="등급" width="100" :formatter="gradeFormatter" />
     </el-table>
     <div class="pagination-block">
-      <el-pagination layout="prev, pager, next" :total="totalCount" :page-size="pageSize" @current-change="getList"/>
+      <el-pagination layout="prev, pager, next" :total="totalCount" :page-size="pageSize" @current-change="studentsApi"/>
     </div>
   </el-container>
 
@@ -38,7 +40,7 @@ const searchForm = ref({
 })
 const pageSize = ref(10);
 const totalCount = ref(0);
-const getList = (page) => {
+const studentsApi = (page) => {
   searchForm.value.page = page;
   axios.get("/api/students", {params: searchForm.value})
       .then(res => {
@@ -58,7 +60,7 @@ const getList = (page) => {
 }
 const search = () => {
   searchForm.value.word = word.value;
-  getList(1);
+  studentsApi(1);
 }
 
 const courseFormatter = (student) => {
@@ -76,7 +78,7 @@ const moveInfo = (student) => {
 }
 
 onMounted(() => {
-  getList(1);
+  studentsApi(1);
 })
 </script>
 

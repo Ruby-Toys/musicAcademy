@@ -1,5 +1,6 @@
 import StudentsView from "@/views/student/StudentsView.vue";
 import StudentInfoView from "@/views/student/StudentInfoView.vue";
+import StudentAddView from "@/views/student/StudentAddView.vue";
 
 export const studentRoutes = [
     {
@@ -11,6 +12,10 @@ export const studentRoutes = [
         path: "/studentInfo",
         name: "studentInfo",
         component: StudentInfoView,
-        props: true
+    },
+    {
+        path: "/studentCreate",
+        name: "studentCreate",
+        component: StudentAddView,
     },
 ]

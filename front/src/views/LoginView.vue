@@ -11,7 +11,7 @@
     <el-form-item label="Password">
       <el-input v-model="loginForm.password" />
     </el-form-item>
-    <el-button type="primary" @click="login">로그인</el-button>
+    <el-button type="primary" @click="loginApi">로그인</el-button>
   </el-form>
 </template>
 
@@ -25,9 +25,9 @@ const loginForm = reactive({
   password: "",
 });
 
-const login = () => {
+const loginApi = () => {
   axios
-    .post("/api/login", loginForm, {withCredentials: true})
+    .post("/api/login", loginForm)
     .then(() => {
       // 로그인에 성공하면 켈린더 스케쥴 페이지로 넘어감!
       router.replace({ name: "schedules" });

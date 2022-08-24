@@ -69,7 +69,7 @@ public class DataInit implements CommandLineRunner {
                             .course(idx % 2 == 0 ? Course.VIOLIN : Course.PIANO)
                             .email("student" + idx + "@naver.com")
                             .grade(Grade.BEGINNER)
-                            .phoneNumber("010-1111-2222")
+                            .phoneNumber("01011112222")
                             .memo("악기 연주에 소질이 있음")
                             .build()
                     )
@@ -87,7 +87,7 @@ public class DataInit implements CommandLineRunner {
                             .name("teacher" + ++idx)
                             .course(idx % 2 == 0 ? Course.VIOLIN : Course.PIANO)
                             .email("teacher" + idx + "@naver.com")
-                            .phoneNumber("010-1111-2222")
+                            .phoneNumber("01011112222")
                             .build()
                     )
                     .collect(Collectors.toList());

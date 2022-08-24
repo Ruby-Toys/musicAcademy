@@ -43,7 +43,7 @@
         <el-input v-model="student.memo" type="textarea" resize="false"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="editStudent">수정</el-button>
+        <el-button type="primary" @click="editStudentApi">수정</el-button>
         <el-button type="danger" @click="movePaymentProcess">결제하기</el-button>
       </el-form-item>
     </el-form>
@@ -76,7 +76,7 @@ const studentStore = useStudentStore();
 const student = ref({...studentStore.getStudent})
 
 // TODO - 회원 정보 수정, 결제 페이지 이동
-const editStudent = () => {
+const editStudentApi = () => {
   axios.patch(`/api/students/${student.value.id}`, student.value)
       .then(res => {
         if (res.status === 200) {

@@ -1,11 +1,9 @@
 package ruby.api.controller.student;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,29 +12,17 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
-import ruby.api.request.student.StudentSearch;
 import ruby.api.request.student.StudentUpdate;
 import ruby.api.valid.EmailPattern;
 import ruby.api.valid.NamePattern;
 import ruby.api.valid.PhonePattern;
-import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
-import ruby.core.domain.Teacher;
 import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.Grade;
-import ruby.core.domain.enums.ScheduleState;
-import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
-import ruby.core.repository.TeacherRepository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,7 +50,7 @@ public class StudentEditTest {
                 .course(Course.VIOLIN)
                 .email("student@naver.com")
                 .grade(Grade.BEGINNER)
-                .phoneNumber("010-1111-2222")
+                .phoneNumber("01011112222")
                 .memo("악기 연주에 소질이 있음")
                 .build();
         studentRepository.save(student);
@@ -79,7 +65,7 @@ public class StudentEditTest {
         StudentUpdate studentUpdate = StudentUpdate.builder()
                 .name("!@#")
                 .email("testnaver.com")
-                .phoneNumber("010-2323-3423123")
+                .phoneNumber("01023233423123")
                 .memo("고급 단계로 변경")
                 .build();
 
@@ -105,7 +91,7 @@ public class StudentEditTest {
         StudentUpdate studentUpdate = StudentUpdate.builder()
                 .name("test")
                 .email("test@naver.com")
-                .phoneNumber("010-2323-3423")
+                .phoneNumber("01023233423")
                 .course(Course.FLUTE)
                 .grade(Grade.ADVANCED)
                 .memo("고급 단계로 변경")
@@ -138,7 +124,7 @@ public class StudentEditTest {
         StudentUpdate studentUpdate = StudentUpdate.builder()
                 .name("test")
                 .email("test@naver.com")
-                .phoneNumber("010-2323-3423")
+                .phoneNumber("01023233423")
                 .course(Course.FLUTE)
                 .grade(Grade.ADVANCED)
                 .memo("고급 단계로 변경")

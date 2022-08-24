@@ -2,7 +2,11 @@
   <el-menu mode="horizontal" :ellipsis="false">
     <span class="header-title" @click="moveHome">Music Academy</span>
     <el-menu-item index="1" @click="moveSchedules">스케줄</el-menu-item>
-    <el-menu-item index="2" @click="moveStudents">수강생</el-menu-item>
+    <el-sub-menu index="2">
+      <template #title>수강생</template>
+      <el-menu-item index="2-1" @click="moveStudents">수강생 목록 조회</el-menu-item>
+      <el-menu-item index="2-2" @click="moveStudentCreate">수강생 등록</el-menu-item>
+    </el-sub-menu>
     <el-menu-item index="3" @click="moveTeachers">선생님</el-menu-item>
     <el-menu-item index="4" @click="movePayments">결제 내역</el-menu-item>
     <div class="flex-grow" />
@@ -23,6 +27,9 @@ const moveSchedules = () => {
 };
 const moveStudents = () => {
   router.push({ name: "students" });
+};
+const moveStudentCreate = () => {
+  router.push({ name: "studentCreate" });
 };
 const moveTeachers = () => {
   router.push({ name: "teachers" });
@@ -57,7 +64,6 @@ const logout = () => {
 
 .el-menu--horizontal > .el-menu-item.is-active,
 .el-menu--horizontal > .el-menu-item {
-  border-bottom: none;
   height: 60px;
 }
 

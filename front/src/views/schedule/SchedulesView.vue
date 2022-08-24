@@ -105,10 +105,10 @@ const schedules = ref([]);
 const getCourseList = (course) => {
   searchForm.value.course = course;
   searchForm.value.appointmentTime = getTodayStr();
-  getList();
+  schedulesApi();
 }
 
-const getList = () => {
+const schedulesApi = () => {
   axios.get("/api/schedules", {params: searchForm.value})
       .then(res => {
         schedules.value = [];
@@ -135,7 +135,7 @@ onMounted(() => {
   createAsideCalendar();
   createMainCalendar();
   // 현재 날짜가 속한 주 단위의 기간의 스케쥴을 조회한다.
-  getList();
+  schedulesApi();
 });
 
 

@@ -54,7 +54,7 @@ class StudentGetListTest {
                         .course(Course.VIOLIN)
                         .email("test" + idx + "@naver.com")
                         .grade(Grade.BEGINNER)
-                        .phoneNumber("010-1111-2222")
+                        .phoneNumber("01011112222")
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -82,7 +82,7 @@ class StudentGetListTest {
                         .course(Course.VIOLIN)
                         .email("test" + idx + "@naver.com")
                         .grade(Grade.BEGINNER)
-                        .phoneNumber("010-1111-2222")
+                        .phoneNumber("01011112222")
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -109,7 +109,7 @@ class StudentGetListTest {
                         .course(Course.VIOLIN)
                         .email("test" + idx + "@naver.com")
                         .grade(Grade.BEGINNER)
-                        .phoneNumber("010-1111-2222")
+                        .phoneNumber("01011112222")
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -138,7 +138,7 @@ class StudentGetListTest {
                         .course(Course.VIOLIN)
                         .email("test" + idx + "@naver.com")
                         .grade(Grade.BEGINNER)
-                        .phoneNumber("010-1111-2222")
+                        .phoneNumber("01011112222")
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -170,7 +170,7 @@ class StudentGetListTest {
                         .course(Course.VIOLIN)
                         .email("test" + idx + "@naver.com")
                         .grade(Grade.BEGINNER)
-                        .phoneNumber("010-1111-2222")
+                        .phoneNumber("01011112222")
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -202,7 +202,7 @@ class StudentGetListTest {
                         .course(Course.VIOLIN)
                         .email("test" + idx + "@naver.com")
                         .grade(Grade.BEGINNER)
-                        .phoneNumber("010-1111-2222")
+                        .phoneNumber("01011112222")
                         .build()
                 )
                 .collect(Collectors.toList());

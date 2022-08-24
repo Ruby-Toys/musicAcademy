@@ -46,7 +46,7 @@ class TeacherGetListTest {
                         .name("teacher" + ++idx)
                         .course(Course.VIOLIN)
                         .email("teacher" + idx + "@naver.com")
-                        .phoneNumber("010-1111-2222")
+                        .phoneNumber("01011112222")
                         .build()
                 )
                 .collect(Collectors.toList());

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import ruby.api.request.student.StudentAdd;
 import ruby.api.request.student.StudentUpdate;
 import ruby.api.request.student.StudentSearch;
 import ruby.api.response.student.StudentInfoScheduleResponse;
@@ -25,6 +26,11 @@ public class StudentController {
     private final StudentService studentService;
     private final ScheduleService scheduleService;
 
+    @PostMapping
+    public void post(@RequestBody @Valid StudentAdd studentAdd) {
+        log.info("post!");
+    }
+
     @GetMapping
     public StudentsResponse getList(@Valid StudentSearch studentSearch) {
         Page<Student> studentPage = studentService.getList(studentSearch);
@@ -38,7 +44,7 @@ public class StudentController {
     }
 
     @PatchMapping("/{id}")
-    public void edit(@PathVariable Long id, @RequestBody @Valid StudentUpdate studentUpdate) {
+    public void patch(@PathVariable Long id, @RequestBody @Valid StudentUpdate studentUpdate) {
         studentService.edit(id, studentUpdate);
     }
 }
