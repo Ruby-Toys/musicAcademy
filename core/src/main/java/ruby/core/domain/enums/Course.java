@@ -4,10 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum Course {
-    PIANO, VIOLIN, VIOLA, FLUTE, CLARINET, VOCAL;
-
-    public static Course parseCourse(String name) {
-        if (name == null || name.isEmpty()) return null;
-        return Course.valueOf(name);
-    }
+    PIANO, VIOLIN, VIOLA, CELLO, FLUTE, CLARINET, VOCAL;
 }

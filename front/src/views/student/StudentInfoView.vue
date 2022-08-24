@@ -2,22 +2,22 @@
   <el-container class="studentInfoContainer">
     <el-form
         ref="form"
-        :model="studentStore.getStudent"
+        :model="student"
         label-width="auto"
         label-position="right"
         size="default"
     >
       <el-form-item label="이름">
-        <el-input v-model="studentStore.getStudent.name" />
+        <el-input v-model="student.name" />
       </el-form-item>
       <el-form-item label="연락처">
-        <el-input v-model="studentStore.getStudent.phoneNumber" />
+        <el-input v-model="student.phoneNumber" />
       </el-form-item>
       <el-form-item label="이메일">
-        <el-input v-model="studentStore.getStudent.email" />
+        <el-input v-model="student.email" />
       </el-form-item>
       <el-form-item label="수강과목">
-        <el-select v-model="studentStore.getStudent.course">
+        <el-select v-model="student.course">
           <el-option
               v-for="course in COURSE"
               :key="course.label"
@@ -27,7 +27,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="등급">
-        <el-select v-model="studentStore.getStudent.grade">
+        <el-select v-model="student.grade">
           <el-option
               v-for="grade in GRADE"
               :key="grade.label"
@@ -37,13 +37,13 @@
         </el-select>
       </el-form-item>
       <el-form-item label="등록일">
-        {{studentStore.getStudent.createAt}}
+        {{student.createAt}}
       </el-form-item>
       <el-form-item label="기타">
-        <el-input v-model="studentStore.getStudent.memo" type="textarea" resize="false"/>
+        <el-input v-model="student.memo" type="textarea" resize="false"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">수정</el-button>
+        <el-button type="primary" @click="editStudent">수정</el-button>
         <el-button type="danger" @click="movePaymentProcess">결제하기</el-button>
       </el-form-item>
     </el-form>
@@ -73,8 +73,23 @@ import router from "@/router";
 
 const schedules = ref([]);
 const studentStore = useStudentStore();
+const student = ref({...studentStore.getStudent})
 
 // TODO - 회원 정보 수정, 결제 페이지 이동
+const editStudent = () => {
+  axios.patch(`/api/students/${student.value.id}`, student.value)
+      .then(res => {
+        if (res.status === 200) {
+          // 수정에 성공했을 때 그 내용을 store 에 반영하여 갱신
+          studentStore.set(student.value);
+          alert("수강생 정보가 변경되었습니다.");
+        }
+      })
+      .catch((err) => {
+        const result = err.response.data;
+        alert(result.message);
+      });
+}
 
 const movePaymentProcess = () => {
   // 결제할 수강생 정보는 store 에 저장되어 있는 정보를 그대로 사용

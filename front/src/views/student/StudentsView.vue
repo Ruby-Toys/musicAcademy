@@ -73,10 +73,6 @@ const moveInfo = (student) => {
   const studentStore = useStudentStore();
   studentStore.set(student);
   router.push({ name: "studentInfo"});
-  // id 에 해당하는 정보는 store 에 저장하고 상세 페이지에서 store 에 저장된 정보를 사용
-  // 목록을 조회할 때 상세정보에 해당하는 프로퍼티들도 함께 조회해서 가지고 있는다.
-  // 상세 조회시 학생의 기본정보 외에 레슨 기록, 메모(특이사항) 을 보여준다.
-  // 레슨 기록은 상세 조회 페이지 진입 시점에 조회한다.
 }
 
 onMounted(() => {

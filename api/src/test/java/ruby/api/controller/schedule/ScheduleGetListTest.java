@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.request.schedule.ScheduleSearch;
 import ruby.api.service.ScheduleService;
-import ruby.api.valid.CoursePattern;
 import ruby.api.valid.DatePattern;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
@@ -26,14 +25,12 @@ import ruby.core.repository.StudentRepository;
 import ruby.core.repository.TeacherRepository;
 
 import javax.persistence.EntityManager;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.time.DayOfWeek.SUNDAY;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -133,7 +130,6 @@ class ScheduleGetListTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.message").value(ExceptionController.BIND_EXCEPTION_MESSAGE))
-                .andExpect(jsonPath("$.validation.course").value(CoursePattern.MESSAGE))
                 .andDo(print());
     }
 
@@ -145,9 +141,10 @@ class ScheduleGetListTest {
         LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(), LocalDateTime.now().getDayOfMonth(), 0, 0);
         String appointmentTime = now.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        ScheduleSearch search = new ScheduleSearch();
-        search.setCourse(Course.VIOLIN.name());
-        search.setAppointmentTime(appointmentTime);
+        ScheduleSearch search = ScheduleSearch.builder()
+                        .course(Course.VIOLIN)
+                        .appointmentTime(appointmentTime)
+                        .build();
 
         mockMvc.perform(get("/schedules")
                         .param("course", Course.FLUTE.name())
@@ -166,12 +163,13 @@ class ScheduleGetListTest {
         LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue() + 3, LocalDateTime.now().getDayOfMonth(), 0, 0);
         String appointmentTime = now.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        ScheduleSearch search = new ScheduleSearch();
-        search.setCourse(Course.VIOLIN.name());
-        search.setAppointmentTime(appointmentTime);
+        ScheduleSearch search = ScheduleSearch.builder()
+                .course(Course.VIOLIN)
+                .appointmentTime(appointmentTime)
+                .build();
 
         mockMvc.perform(get("/schedules")
-                        .param("course", search.getCourse())
+                        .param("course", search.getCourse().name())
                         .param("appointmentTime", search.getAppointmentTime())
                 )
                 .andExpect(status().isOk())
@@ -187,15 +185,16 @@ class ScheduleGetListTest {
         LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), 0, 0);
         String appointmentTime = now.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        ScheduleSearch search = new ScheduleSearch();
-        search.setCourse(Course.VIOLIN.name());
-        search.setAppointmentTime(appointmentTime);
+        ScheduleSearch search = ScheduleSearch.builder()
+                .course(Course.VIOLIN)
+                .appointmentTime(appointmentTime)
+                .build();
 
         int resultCount = scheduleService.getList(search).size();
 
         // when
         mockMvc.perform(get("/schedules")
-                        .param("course", search.getCourse())
+                        .param("course", search.getCourse().name())
                         .param("appointmentTime", search.getAppointmentTime())
                 )
                 .andExpect(status().isOk())

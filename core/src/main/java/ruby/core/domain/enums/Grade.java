@@ -11,9 +11,4 @@ public enum Grade {
     Grade(long amount) {
         this.amount = amount;
     }
-
-    public static Grade parseGrade(String name) {
-        if (name == null || name.isEmpty()) return null;
-        return Grade.valueOf(name);
-    }
 }

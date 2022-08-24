@@ -1,4 +1,4 @@
-package ruby.api.security;
+package ruby.api.request.schedule.resolver;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -7,15 +7,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import ruby.api.security.LoginAccount;
-import ruby.api.security.UserAccount;
+import ruby.api.request.schedule.ScheduleSearch;
+import ruby.core.domain.enums.Course;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 
 @RequiredArgsConstructor
 @Component
-public class UserAccountArgumentResolver implements HandlerMethodArgumentResolver {
-    private final HttpSession httpSession;
+public class ScheduleSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
     /**
      * 컨트롤러 메서드의 특정 파라미터를 지원하는지 판단
@@ -24,18 +23,16 @@ public class UserAccountArgumentResolver implements HandlerMethodArgumentResolve
      */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        // 해당 어노테이션이 붙은 파라미터가 있는지 확인
-        boolean isLoginAccountAnnotation = parameter.getParameterAnnotation(LoginAccount.class) != null;
-
         // UserAccount 타입의 파라미터가 있는지 확인
-        boolean isAccountClass = UserAccount.class.equals(parameter.getParameterType());
-
-        // @LoginAccount 가 붙어있고 타입이 UserAccount 인 파라미터가 있는 경우 true
-        return isLoginAccountAnnotation && isAccountClass;
+        return ScheduleSearch.class.equals(parameter.getParameterType());
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return httpSession.getAttribute("account");
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        return ScheduleSearch.builder()
+                .appointmentTime((String)request.getAttribute("appointmentTime"))
+                .course(Course.valueOf((String)request.getAttribute("course")))
+                .build();
     }
 }

@@ -1,7 +1,9 @@
 package ruby.api.controller;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,11 +16,6 @@ public class ExceptionController {
 
     public static final String BIND_EXCEPTION_MESSAGE = "형식에 맞지 않는 값이 존재합니다.";
 
-
-    /**
-     * 검증 값 에러 처리
-     * @param e
-     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public ErrorResponse bindExceptionHandler(BindException e) {
@@ -29,6 +26,15 @@ public class ExceptionController {
 
         e.getFieldErrors().forEach(errorResponse::addValidation);
         return errorResponse;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidFormatException.class)
+    public ErrorResponse invalidFormatExceptionHandler(InvalidFormatException e) {
+        return ErrorResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message(BIND_EXCEPTION_MESSAGE)
+                .build();
     }
 
     /**

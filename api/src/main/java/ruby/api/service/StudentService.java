@@ -7,14 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.exception.student.StudentNotFoundException;
+import ruby.api.request.student.StudentUpdate;
 import ruby.api.request.student.StudentSearch;
-import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
-import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 import static java.lang.Math.max;
 
@@ -29,5 +25,17 @@ public class StudentService {
     public Page<Student> getList(StudentSearch search) {
         Pageable pageable = PageRequest.of(max(0, search.getPage() - 1), StudentSearch.PAGE_SIZE);
         return studentRepository.findByNameContains(search.getWord(), pageable);
+    }
+
+    public void edit(Long id, StudentUpdate studentUpdate) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(StudentNotFoundException::new);
+
+        student.setName(studentUpdate.getName());
+        student.setEmail(studentUpdate.getEmail());
+        student.setPhoneNumber(studentUpdate.getPhoneNumber());
+        student.setCourse(studentUpdate.getCourse());
+        student.setGrade(studentUpdate.getGrade());
+        student.setMemo(studentUpdate.getMemo());
     }
 }
