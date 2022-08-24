@@ -9,6 +9,4 @@ import java.util.Optional;
 public interface StudentRepositoryCustom {
 
     Page<Student> findByNameContains(String word, Pageable pageable);
-
-    Optional<Student> findInfo(Long id);
 }

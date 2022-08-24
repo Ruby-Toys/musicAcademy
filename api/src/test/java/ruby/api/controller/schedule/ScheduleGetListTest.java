@@ -11,6 +11,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
+import ruby.api.request.schedule.ScheduleSearch;
+import ruby.api.service.ScheduleService;
 import ruby.api.valid.CoursePattern;
 import ruby.api.valid.DatePattern;
 import ruby.core.domain.Schedule;
@@ -23,11 +25,15 @@ import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
 import ruby.core.repository.TeacherRepository;
 
+import javax.persistence.EntityManager;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.time.DayOfWeek.SUNDAY;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,6 +52,10 @@ class ScheduleGetListTest {
     TeacherRepository teacherRepository;
     @Autowired
     ScheduleRepository scheduleRepository;
+    @Autowired
+    ScheduleService scheduleService;
+    @Autowired
+    EntityManager entityManager;
 
     @BeforeEach
     void before() {
@@ -71,22 +81,22 @@ class ScheduleGetListTest {
                 .build();
         teacherRepository.save(teacher);
         LocalDateTime now = LocalDateTime.now();
-        List<Schedule> schedules = IntStream.range(0, 8)
+        List<Schedule> schedules = IntStream.range(0, 4)
                 .mapToObj(idx -> Schedule.builder()
                         .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
+                                LocalDateTime.of(now.getYear(), now.getMonthValue() - 1, (idx + 1) * 6,
                                         10 + idx, 0))
-                        .state(ScheduleState.NOT_STARTED)
+                        .state(ScheduleState.COMPLETED)
                         .student(student)
                         .teacher(teacher)
                         .build()
                 )
                 .collect(Collectors.toList());
         scheduleRepository.saveAll(schedules);
-        schedules = IntStream.range(0, 8)
+        schedules = IntStream.range(0, 4)
                 .mapToObj(idx -> Schedule.builder()
                         .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth() - 7,
+                                LocalDateTime.of(now.getYear(), now.getMonth(), (idx + 1) * 6,
                                         10 + idx, 0))
                         .state(ScheduleState.NOT_STARTED)
                         .student(student)
@@ -131,9 +141,17 @@ class ScheduleGetListTest {
     @DisplayName("수강생이 없는 과목으로 스케쥴 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
     void getList_noneCourse() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(), LocalDateTime.now().getDayOfMonth(), 0, 0);
+        String appointmentTime = now.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        ScheduleSearch search = new ScheduleSearch();
+        search.setCourse(Course.VIOLIN.name());
+        search.setAppointmentTime(appointmentTime);
+
         mockMvc.perform(get("/schedules")
                         .param("course", Course.FLUTE.name())
-                        .param("appointmentTime", "2022-08-30")
+                        .param("appointmentTime", search.getAppointmentTime())
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents.length()").value(0))
@@ -144,9 +162,17 @@ class ScheduleGetListTest {
     @DisplayName("스케쥴이 없는 기간으로 스케쥴 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
     void getList_noneAppointmentTime() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue() + 3, LocalDateTime.now().getDayOfMonth(), 0, 0);
+        String appointmentTime = now.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        ScheduleSearch search = new ScheduleSearch();
+        search.setCourse(Course.VIOLIN.name());
+        search.setAppointmentTime(appointmentTime);
+
         mockMvc.perform(get("/schedules")
-                        .param("course", Course.VIOLIN.name())
-                        .param("appointmentTime", "2022-08-30")
+                        .param("course", search.getCourse())
+                        .param("appointmentTime", search.getAppointmentTime())
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents.length()").value(0))
@@ -157,12 +183,23 @@ class ScheduleGetListTest {
     @DisplayName("스케쥴 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
     void getList() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), 0, 0);
+        String appointmentTime = now.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        ScheduleSearch search = new ScheduleSearch();
+        search.setCourse(Course.VIOLIN.name());
+        search.setAppointmentTime(appointmentTime);
+
+        int resultCount = scheduleService.getList(search).size();
+
+        // when
         mockMvc.perform(get("/schedules")
-                        .param("course", Course.VIOLIN.name())
-                        .param("appointmentTime", "2022-08-23")
+                        .param("course", search.getCourse())
+                        .param("appointmentTime", search.getAppointmentTime())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents.length()").value(8))
+                .andExpect(jsonPath("$.contents.length()").value(resultCount))
                 .andDo(print());
     }
 }

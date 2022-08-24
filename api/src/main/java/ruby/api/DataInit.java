@@ -63,7 +63,7 @@ public class DataInit implements CommandLineRunner {
         boolean notExists = studentRepository.count() == 0;
 
         if (notExists) {
-            List<Student> students = IntStream.range(0, 271)
+            List<Student> students = IntStream.range(0, 2)
                     .mapToObj(idx -> Student.builder()
                             .name("student" + ++idx)
                             .course(idx % 2 == 0 ? Course.VIOLIN : Course.PIANO)
@@ -82,7 +82,7 @@ public class DataInit implements CommandLineRunner {
         boolean notExists = teacherRepository.count() == 0;
 
         if (notExists) {
-            List<Teacher> teachers = IntStream.range(0, 5)
+            List<Teacher> teachers = IntStream.range(0, 2)
                     .mapToObj(idx -> Teacher.builder()
                             .name("teacher" + ++idx)
                             .course(idx % 2 == 0 ? Course.VIOLIN : Course.PIANO)
@@ -100,12 +100,13 @@ public class DataInit implements CommandLineRunner {
         Teacher teacher1 = teacherRepository.findAll().get(0);
 
         LocalDateTime now = LocalDateTime.now();
-        List<Schedule> schedules = IntStream.range(0, 8)
+        List<Schedule> schedules = IntStream.range(0, 4)
                 .mapToObj(idx -> Schedule.builder()
                         .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
-                                        10 + idx, 0))
-                        .state(ScheduleState.NOT_STARTED)
+                                LocalDateTime.of(
+                                        now.getYear(), now.getMonth(),
+                                        (idx + 1) * 6,  10 + idx, 0))
+                        .state(idx < 2 ? ScheduleState.COMPLETED : ScheduleState.NOT_STARTED)
                         .student(student1)
                         .teacher(teacher1)
                         .build()
@@ -115,12 +116,13 @@ public class DataInit implements CommandLineRunner {
 
         Student student2 = studentRepository.findAll().get(1);
         Teacher teacher2 = teacherRepository.findAll().get(1);
-        schedules = IntStream.range(0, 8)
+        schedules = IntStream.range(0, 4)
                 .mapToObj(idx -> Schedule.builder()
                         .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
-                                        10 + idx, 0))
-                        .state(ScheduleState.NOT_STARTED)
+                                LocalDateTime.of(
+                                        now.getYear(), now.getMonth(),
+                                        (idx + 1) * 6,  10 + idx, 0))
+                        .state(idx < 2 ? ScheduleState.COMPLETED : ScheduleState.NOT_STARTED)
                         .student(student2)
                         .teacher(teacher2)
                         .build()

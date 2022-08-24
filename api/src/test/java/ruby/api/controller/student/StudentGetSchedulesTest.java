@@ -67,12 +67,24 @@ public class StudentGetSchedulesTest {
                 .build();
         teacherRepository.save(teacher);
         LocalDateTime now = LocalDateTime.now();
-        List<Schedule> schedules = IntStream.range(0, 5)
+        List<Schedule> schedules = IntStream.range(0, 4)
                 .mapToObj(idx -> Schedule.builder()
                         .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
+                                LocalDateTime.of(now.getYear(), now.getMonth(), (idx + 1) * 6,
                                         10 + idx, 0))
-                        .state(ScheduleState.NOT_STARTED)
+                        .state(idx < 2 ? ScheduleState.COMPLETED : ScheduleState.NOT_STARTED)
+                        .student(student)
+                        .teacher(teacher)
+                        .build()
+                )
+                .collect(Collectors.toList());
+        scheduleRepository.saveAll(schedules);
+        schedules = IntStream.range(0, 4)
+                .mapToObj(idx -> Schedule.builder()
+                        .appointmentTime(
+                                LocalDateTime.of(now.getYear(), now.getMonthValue() - 1, (idx + 1) * 6,
+                                        10 + idx, 0))
+                        .state(ScheduleState.COMPLETED)
                         .student(student)
                         .teacher(teacher)
                         .build()
@@ -101,11 +113,12 @@ public class StudentGetSchedulesTest {
     void getSchedules() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
+        int size = scheduleRepository.findByStudent(student.getId()).size();
 
         // when
         mockMvc.perform(get("/students/{id}/schedules", student.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents.length()").value(5))
+                .andExpect(jsonPath("$.contents.length()").value(size))
                 .andDo(print());
     }
 }

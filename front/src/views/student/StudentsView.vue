@@ -11,8 +11,8 @@
       <el-table-column prop="name" label="이름" width="150" />
       <el-table-column prop="phoneNumber" label="연락처" />
       <el-table-column prop="email" label="이메일" />
-      <el-table-column prop="course" label="수강과목" width="150"/>
-      <el-table-column prop="grade" label="등급" width="100"/>
+      <el-table-column prop="course" label="수강과목" width="150" :formatter="courseFormatter" />
+      <el-table-column prop="grade" label="등급" width="100" :formatter="gradeFormatter" />
     </el-table>
     <div class="pagination-block">
       <el-pagination layout="prev, pager, next" :total="totalCount" :page-size="pageSize" @current-change="getList"/>
@@ -25,8 +25,10 @@
 import {onMounted, ref} from "vue";
 import { Search } from '@element-plus/icons-vue'
 import {COURSE} from "/src/js/course";
+import {GRADE} from "/src/js/grade";
 import axios from "axios";
 import router from "@/router";
+import {useStudentStore} from "@/store/student";
 
 const students = ref([]);
 const word = ref('');
@@ -45,7 +47,7 @@ const getList = (page) => {
         totalCount.value = studentsPage.totalCount;
         students.value = [];
         studentsPage.contents.forEach(student => {
-          student.course = COURSE[student.course].label;
+          // student.course = COURSE[student.course].label;
           students.value.push(student);
         })
       })
@@ -58,21 +60,23 @@ const search = () => {
   searchForm.value.word = word.value;
   getList(1);
 }
-const moveInfo = (row) => {
+
+const courseFormatter = (student) => {
+  return COURSE[student.course].label;
+}
+const gradeFormatter = (student) => {
+  return GRADE[student.grade].label;
+}
+
+const moveInfo = (student) => {
   // router.push({ name: "studentInfo" , params: {studentId: row.id}});
+  const studentStore = useStudentStore();
+  studentStore.set(student);
   router.push({ name: "studentInfo"});
   // id 에 해당하는 정보는 store 에 저장하고 상세 페이지에서 store 에 저장된 정보를 사용
   // 목록을 조회할 때 상세정보에 해당하는 프로퍼티들도 함께 조회해서 가지고 있는다.
   // 상세 조회시 학생의 기본정보 외에 레슨 기록, 메모(특이사항) 을 보여준다.
   // 레슨 기록은 상세 조회 페이지 진입 시점에 조회한다.
-  axios.get(`/api/students/${row.id}/schedules`)
-      .then((res) => {
-
-      })
-      .catch(err => {
-        const result = err.response.data;
-        alert(result.message);
-      });
 }
 
 onMounted(() => {

@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.request.student.StudentSearch;
+import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
+import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Math.max;
@@ -26,12 +29,5 @@ public class StudentService {
     public Page<Student> getList(StudentSearch search) {
         Pageable pageable = PageRequest.of(max(0, search.getPage() - 1), StudentSearch.PAGE_SIZE);
         return studentRepository.findByNameContains(search.getWord(), pageable);
-    }
-
-    @Transactional(readOnly = true)
-    public Student get(Long id) {
-        // 상세 조회를 할 때 회원의 예약된 스케줄도 같이 조회를 한다.
-        return studentRepository.findInfo(id)
-                .orElseThrow(StudentNotFoundException::new);
     }
 }

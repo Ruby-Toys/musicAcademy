@@ -16,6 +16,7 @@ public class StudentResponse {
     private String phoneNumber;
     private String course;
     private String grade;
+    private String memo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createAt;
 
@@ -27,6 +28,7 @@ public class StudentResponse {
         this.phoneNumber = student.getPhoneNumber();
         this.course = student.getCourse().name();
         this.grade = student.getGrade().name();
+        this.memo = student.getMemo();
         this.createAt = student.getCreateAt();
     }
 }

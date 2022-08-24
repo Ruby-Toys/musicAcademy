@@ -4,9 +4,13 @@
 
 <script setup lang="ts">
 import router from "@/router";
+import axios from "axios";
 
 const moveLogin = () => {
-  router.push({ name: "login" });
+  axios.post("/api/loginCheck")
+      .then((res) => {
+        router.push({ name: res.data ? "schedules" : "login"});
+      });
 };
 </script>
 

@@ -41,17 +41,6 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
         return PageableExecutionUtils.getPage(students, pageable, () -> size);
     }
 
-    @Override
-    public Optional<Student> findInfo(Long id) {
-        Student findStudent = queryFactory.selectFrom(student)
-                .join(student, schedule.student).fetchJoin()
-                .where(student.id.eq(id))
-                .distinct()
-                .fetchOne();
-
-        return Optional.ofNullable(findStudent);
-    }
-
     private Predicate searchCondition(String word) {
         return word == null ? null : student.name.contains(word);
     }

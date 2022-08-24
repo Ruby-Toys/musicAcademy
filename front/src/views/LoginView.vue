@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive} from "vue";
+import {reactive} from "vue";
 import axios from "axios";
 import router from "@/router";
 
@@ -26,8 +26,6 @@ const loginForm = reactive({
 });
 
 const login = () => {
-
-
   axios
     .post("/api/login", loginForm, {withCredentials: true})
     .then(() => {
@@ -39,18 +37,6 @@ const login = () => {
       alert(result.message);
     });
 };
-
-const loginCheck = () => {
-  axios
-      .post("/api/loginCheck")
-      .then((res) => {
-        if (res.data) router.push({ name: "schedules" });
-      });
-}
-
-onMounted(() => {
-  loginCheck();
-})
 
 </script>
 

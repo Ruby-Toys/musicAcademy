@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ruby.api.request.student.StudentSearch;
-import ruby.api.response.schedule.SchedulesResponse;
+import ruby.api.response.student.StudentInfoScheduleResponse;
 import ruby.api.response.student.StudentsResponse;
 import ruby.api.service.ScheduleService;
 import ruby.api.service.StudentService;
@@ -34,10 +34,10 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/schedules")
-    public SchedulesResponse getSchedules(@PathVariable Long id) {
+    public StudentInfoScheduleResponse getSchedules(@PathVariable Long id) {
         List<Schedule> schedules = scheduleService.getListByStudent(id);
 
         // 검색어, 페이지 번호
-        return new SchedulesResponse(schedules);
+        return new StudentInfoScheduleResponse(schedules);
     }
 }
