@@ -7,16 +7,16 @@
         label-position="right"
         size="default"
     >
-      <el-form-item label="이름">
+      <el-form-item prop="name" label="이름" :rules="nameRule">
         <el-input v-model="student.name" />
       </el-form-item>
-      <el-form-item label="연락처">
+      <el-form-item prop="phoneNumber" label="연락처" :rules="phoneNumberRule">
         <el-input v-model="student.phoneNumber" />
       </el-form-item>
-      <el-form-item label="이메일">
+      <el-form-item prop="email" label="이메일" :rules="emailRule">
         <el-input v-model="student.email" />
       </el-form-item>
-      <el-form-item label="수강과목">
+      <el-form-item prop="course" label="수강과목" :rules="courseRule">
         <el-select v-model="student.course">
           <el-option
               v-for="course in COURSE"
@@ -26,7 +26,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="등급">
+      <el-form-item prop="grade" label="등급" :rules="gradeRule">
         <el-select v-model="student.grade">
           <el-option
               v-for="grade in GRADE"
@@ -43,9 +43,9 @@
         <el-input v-model="student.memo" type="textarea" resize="false"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="editStudentApi">수정</el-button>
+        <el-button type="primary" @click="patchApi">수정</el-button>
         <el-button type="success" @click="movePaymentProcess">결제하기</el-button>
-        <el-button type="danger" @click="deleteStudentApi">삭제</el-button>
+        <el-button type="danger" @click="deleteApi">삭제</el-button>
       </el-form-item>
     </el-form>
     <el-timeline>
@@ -67,16 +67,17 @@
 <script setup lang="ts">
 import {useStudentStore} from "@/store/studentStore";
 import {onMounted, ref} from "vue";
-import {COURSE} from "/src/js/course";
-import {GRADE} from "/src/js/grade";
+import {COURSE} from "/src/ts/course";
+import {GRADE} from "/src/ts/grade";
 import axios from "axios";
 import router from "@/router";
+import {nameRule, phoneNumberRule, emailRule, courseRule, gradeRule } from "/src/validator/FormValidator"
 
 const schedules = ref([]);
 const studentStore = useStudentStore();
 const student = ref({...studentStore.getStudent})
 
-const editStudentApi = () => {
+const patchApi = () => {
   axios.patch(`/api/students/${student.value.id}`, student.value)
       .then(res => {
         studentStore.set(student.value);
@@ -88,11 +89,12 @@ const editStudentApi = () => {
       });
 }
 
-const deleteStudentApi = () => {
+const deleteApi = () => {
   if (confirm("수강생 정보를 삭제하시겠습니까?")) {
     axios.delete(`/api/students/${student.value.id}`)
         .then(res => {
           alert("수강생 정보가 삭제되었습니다.");
+          studentStore.delete();
           router.replace({ name: "students"})
         })
         .catch((err) => {
@@ -137,6 +139,10 @@ onMounted(() => {
 .studentInfoContainer .el-form {
   width: 500px;
   margin-right: 20px;
+}
+
+.el-select {
+  width: 100%;
 }
 
 .studentInfoContainer .el-timeline {

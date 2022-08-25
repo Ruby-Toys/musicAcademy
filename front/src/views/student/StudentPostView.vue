@@ -10,63 +10,28 @@
       <el-form-item
           prop="name"
           label="이름"
-          :rules="[
-            {
-              required: true,
-              message: '이름을 입력해주세요.',
-              trigger: 'blur',
-            },
-            {
-              type: 'string',
-              message: '이름 형식이 올바르지 않습니다.',
-              trigger: ['blur', 'change'],
-              pattern: /^[가-힣a-zA-Z\d]{2,20}$/
-            },
-          ]"
+          :rules="nameRule"
       >
         <el-input v-model="student.name" />
       </el-form-item>
       <el-form-item
           prop="phoneNumber"
           label="연락처"
-          :rules="[
-            {
-              required: true,
-              message: '연락처를 입력해주세요.',
-              trigger: 'blur',
-            },
-            {
-              type: 'string',
-              message: '연락처 형식이 올바르지 않습니다.',
-              trigger: ['blur', 'change'],
-              pattern: /^(010|011|016|017|019)\d{3,4}\d{4}$/
-            },
-          ]"
+          :rules="phoneNumberRule"
       >
         <el-input v-model="student.phoneNumber"/>
       </el-form-item>
       <el-form-item
           prop="email"
           label="이메일"
-          :rules="[
-            {
-              required: true,
-              message: '이메일을 입력해주세요.',
-              trigger: 'blur',
-            },
-            {
-              type: 'email',
-              message: '이메일 형식이 올바르지 않습니다.',
-              trigger: ['blur', 'change'],
-            },
-          ]"
+          :rules="emailRule"
       >
         <el-input v-model="student.email" />
       </el-form-item>
       <el-form-item
           prop="course"
           label="수강과목"
-          :rules="[{required: true}]"
+          :rules="courseRule"
       >
         <el-select v-model="student.course">
           <el-option
@@ -80,7 +45,7 @@
       <el-form-item
           prop="grade"
           label="등급"
-          :rules="[{required: true}]"
+          :rules="gradeRule"
       >
         <el-select v-model="student.grade">
           <el-option
@@ -98,7 +63,7 @@
         <el-input v-model="student.memo" type="textarea" resize="false"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="studentAddApi(formRef)">등록</el-button>
+        <el-button type="primary" @click="postApi(formRef)">등록</el-button>
       </el-form-item>
     </el-form>
   </el-container>
@@ -106,11 +71,12 @@
 
 <script setup lang="ts">
 import {reactive, ref} from "vue";
-import {COURSE} from "/src/js/course";
-import {GRADE} from "/src/js/grade";
+import {COURSE} from "/src/ts/course";
+import {GRADE} from "/src/ts/grade";
 import type {FormInstance} from "element-plus";
 import axios from "axios";
 import router from "@/router";
+import {nameRule, phoneNumberRule, emailRule, courseRule, gradeRule } from "/src/validator/FormValidator"
 
 const formRef = ref<FormInstance>()
 const student = reactive<{
@@ -129,12 +95,15 @@ const student = reactive<{
   memo: ''
 })
 
-const studentAddApi = (formEl: FormInstance | undefined) => {
+const postApi = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (!valid) return false;
     axios.post("/api/students", student)
-        .then(res => router.replace({ name: "students"}))
+        .then(res => {
+          alert("등록되었습니다.");
+          router.replace({ name: "students"})}
+        )
         .catch((err) => {
           const result = err.response.data;
           alert(result.message);

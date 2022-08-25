@@ -4,10 +4,14 @@
     <el-menu-item index="1" @click="moveSchedules">스케줄</el-menu-item>
     <el-sub-menu index="2">
       <template #title>수강생</template>
-      <el-menu-item index="2-1" @click="moveStudents">수강생 목록 조회</el-menu-item>
-      <el-menu-item index="2-2" @click="moveStudentCreate">수강생 등록</el-menu-item>
+      <el-menu-item index="2-1" @click="moveStudents">목록 조회</el-menu-item>
+      <el-menu-item index="2-2" @click="moveStudentPost">등록</el-menu-item>
     </el-sub-menu>
-    <el-menu-item index="3" @click="moveTeachers">선생님</el-menu-item>
+    <el-sub-menu index="3">
+      <template #title>선생님</template>
+      <el-menu-item index="3-1" @click="moveTeachers">목록 조회</el-menu-item>
+      <el-menu-item index="3-2" @click="moveTeacherPost">등록</el-menu-item>
+    </el-sub-menu>
     <el-menu-item index="4" @click="movePayments">결제 내역</el-menu-item>
     <div class="flex-grow" />
     <span>계정 관리</span>
@@ -28,11 +32,14 @@ const moveSchedules = () => {
 const moveStudents = () => {
   router.push({ name: "students" });
 };
-const moveStudentCreate = () => {
-  router.push({ name: "studentCreate" });
+const moveStudentPost = () => {
+  router.push({ name: "studentPost" });
 };
 const moveTeachers = () => {
   router.push({ name: "teachers" });
+};
+const moveTeacherPost = () => {
+  router.push({ name: "teacherPost" });
 };
 const movePayments = () => {
   router.push({ name: "payments" });

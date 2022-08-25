@@ -45,7 +45,6 @@ public class TeacherPostTest {
         teacherRepository.deleteAll();
     }
 
-
     @Test
     @DisplayName("잘못된 필드로 선생님 정보 등록")
     void post_wrongField() throws Exception {

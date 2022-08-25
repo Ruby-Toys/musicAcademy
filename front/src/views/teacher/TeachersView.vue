@@ -1,31 +1,33 @@
 <template>
   <el-container class="teachersContainer">
     <h1>Teacher</h1>
-    <el-table class="teachersTable" :data="teachers" @row-click="moveInfo">
+    <el-table class="teachersTable"
+              :data="teachers"
+              @row-click="moveInfo"
+    >
       <el-table-column prop="createAt" label="등록일" width="150" />
       <el-table-column prop="name" label="이름" width="150" />
       <el-table-column prop="phoneNumber" label="연락처" />
       <el-table-column prop="email" label="이메일" />
-      <el-table-column prop="course" label="수강과목" width="150"/>
+      <el-table-column prop="course" label="담당과목" width="150" :formatter="courseFormatter"/>
     </el-table>
   </el-container>
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {COURSE} from "/src/js/course";
+import {COURSE} from "/src/ts/course";
 import axios from "axios";
 import router from "@/router";
 import {useTeacherStore} from "@/store/teacherStore";
 
 const teachers = ref([]);
-const getList = () => {
+const getListApi = () => {
   axios.get("/api/teachers")
       .then(res => {
         const teachersPage = res.data;
         teachers.value = [];
         teachersPage.contents.forEach(teacher => {
-          teacher.course = COURSE[teacher.course].label;
           teachers.value.push(teacher);
         })
       })
@@ -35,6 +37,10 @@ const getList = () => {
       });
 }
 
+const courseFormatter = (teacher) => {
+  return COURSE[teacher.course].label;
+}
+
 const moveInfo = (teacher) => {
   const teacherStore = useTeacherStore();
   teacherStore.set(teacher);
@@ -42,7 +48,7 @@ const moveInfo = (teacher) => {
 }
 
 onMounted(() => {
-  getList();
+  getListApi();
 })
 </script>
 

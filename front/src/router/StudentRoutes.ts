@@ -1,6 +1,6 @@
 import StudentsView from "@/views/student/StudentsView.vue";
 import StudentInfoView from "@/views/student/StudentInfoView.vue";
-import StudentAddView from "@/views/student/StudentAddView.vue";
+import StudentPostView from "@/views/student/StudentPostView.vue";
 
 export const studentRoutes = [
     {
@@ -14,8 +14,8 @@ export const studentRoutes = [
         component: StudentInfoView,
     },
     {
-        path: "/studentCreate",
-        name: "studentCreate",
-        component: StudentAddView,
+        path: "/studentPost",
+        name: "studentPost",
+        component: StudentPostView,
     },
 ]

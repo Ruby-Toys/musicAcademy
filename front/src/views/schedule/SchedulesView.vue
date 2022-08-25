@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import Calendar from "@toast-ui/calendar";
-import {COURSE} from "/src/js/course";
+import {COURSE} from "/src/ts/course";
 import {onMounted, ref} from "vue";
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
@@ -105,10 +105,10 @@ const schedules = ref([]);
 const getCourseList = (course) => {
   searchForm.value.course = course;
   searchForm.value.appointmentTime = getTodayStr();
-  schedulesApi();
+  getListApi();
 }
 
-const schedulesApi = () => {
+const getListApi = () => {
   axios.get("/api/schedules", {params: searchForm.value})
       .then(res => {
         schedules.value = [];
@@ -135,7 +135,7 @@ onMounted(() => {
   createAsideCalendar();
   createMainCalendar();
   // 현재 날짜가 속한 주 단위의 기간의 스케쥴을 조회한다.
-  schedulesApi();
+  getListApi();
 });
 
 

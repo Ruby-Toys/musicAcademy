@@ -17,7 +17,7 @@
       <el-table-column prop="grade" label="등급" width="100" :formatter="gradeFormatter" />
     </el-table>
     <div class="pagination-block">
-      <el-pagination layout="prev, pager, next" :total="totalCount" :page-size="pageSize" @current-change="studentsApi"/>
+      <el-pagination layout="prev, pager, next" :total="totalCount" :page-size="pageSize" @current-change="getListApi"/>
     </div>
   </el-container>
 
@@ -26,8 +26,8 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import { Search } from '@element-plus/icons-vue'
-import {COURSE} from "/src/js/course";
-import {GRADE} from "/src/js/grade";
+import {COURSE} from "/src/ts/course";
+import {GRADE} from "/src/ts/grade";
 import axios from "axios";
 import router from "@/router";
 import {useStudentStore} from "@/store/studentStore";
@@ -40,7 +40,7 @@ const searchForm = ref({
 })
 const pageSize = ref(10);
 const totalCount = ref(0);
-const studentsApi = (page) => {
+const getListApi = (page) => {
   searchForm.value.page = page;
   axios.get("/api/students", {params: searchForm.value})
       .then(res => {
@@ -49,7 +49,6 @@ const studentsApi = (page) => {
         totalCount.value = studentsPage.totalCount;
         students.value = [];
         studentsPage.contents.forEach(student => {
-          // student.course = COURSE[student.course].label;
           students.value.push(student);
         })
       })
@@ -60,7 +59,7 @@ const studentsApi = (page) => {
 }
 const search = () => {
   searchForm.value.word = word.value;
-  studentsApi(1);
+  getListApi(1);
 }
 
 const courseFormatter = (student) => {
@@ -77,7 +76,7 @@ const moveInfo = (student) => {
 }
 
 onMounted(() => {
-  studentsApi(1);
+  getListApi(1);
 })
 </script>
 
@@ -102,6 +101,11 @@ onMounted(() => {
   max-width: 1000px;
   min-width: 900px;
   cursor: pointer;
+}
+
+.el-table-column {
+  display: flex;
+  justify-content: center;
 }
 
 .pagination-block {

@@ -7,16 +7,16 @@
         label-position="right"
         size="default"
     >
-      <el-form-item label="이름">
+      <el-form-item prop="name" label="이름" :rules="nameRule">
         <el-input v-model="teacher.name" />
       </el-form-item>
-      <el-form-item label="연락처">
+      <el-form-item prop="phoneNumber" label="연락처" :rules="phoneNumberRule">
         <el-input v-model="teacher.phoneNumber" />
       </el-form-item>
-      <el-form-item label="이메일">
+      <el-form-item prop="email" label="이메일" :rules="emailRule">
         <el-input v-model="teacher.email" />
       </el-form-item>
-      <el-form-item label="담당과목">
+      <el-form-item prop="course" label="담당과목" :rules="courseRule">
         <el-select v-model="teacher.course">
           <el-option
               v-for="course in COURSE"
@@ -30,11 +30,11 @@
         {{teacher.createAt}}
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="editTeacherApi">수정</el-button>
-        <el-button type="danger" @click="deleteTeacherApi">삭제</el-button>
+        <el-button type="primary" @click="patchApi">수정</el-button>
+        <el-button type="danger" @click="deleteApi">삭제</el-button>
       </el-form-item>
     </el-form>
-    <el-timeline>
+    <el-timeline v-if="schedules.length > 0">
       <h1>스케줄</h1>
       <el-timeline-item
           v-for="schedule in schedules"
@@ -51,16 +51,17 @@
 <script setup lang="ts">
 import {useTeacherStore} from "@/store/teacherStore";
 import {onMounted, ref} from "vue";
-import {COURSE} from "/src/js/course";
-import {GRADE} from "/src/js/grade";
+import {COURSE} from "/src/ts/course";
+import {GRADE} from "/src/ts/grade";
 import axios from "axios";
 import router from "@/router";
+import {nameRule, phoneNumberRule, emailRule, courseRule } from "/src/validator/FormValidator"
 
 const schedules = ref([]);
 const teacherStore = useTeacherStore();
 const teacher = ref({...teacherStore.getTeacher})
 
-const editTeacherApi = () => {
+const patchApi = () => {
   axios.patch(`/api/teachers/${teacher.value.id}`, teacher.value)
       .then(res => {
         teacherStore.set(teacher.value);
@@ -69,14 +70,16 @@ const editTeacherApi = () => {
       .catch((err) => {
         const result = err.response.data;
         alert(result.message);
+        console.log(result);
       });
 }
 
-const deleteTeacherApi = () => {
+const deleteApi = () => {
   if (confirm("수강생 정보를 삭제하시겠습니까?")) {
     axios.delete(`/api/teachers/${teacher.value.id}`)
         .then(res => {
           alert("수강생 정보가 삭제되었습니다.");
+          teacherStore.delete();
           router.replace({ name: "teachers"})
         })
         .catch((err) => {
@@ -116,6 +119,10 @@ onMounted(() => {
 .teacherInfoContainer .el-form {
   width: 500px;
   margin-right: 20px;
+}
+
+.el-select {
+  width: 100%;
 }
 
 .teacherInfoContainer .el-timeline {
