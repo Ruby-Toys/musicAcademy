@@ -57,6 +57,18 @@ public class DataInit implements CommandLineRunner {
 
             accountRepository.save(admin);
         }
+
+        exists = accountRepository.findByName("test").isPresent();
+
+        if (!exists) {
+            Account admin = Account.builder()
+                    .name("test")
+                    .password(passwordEncoder.encode("12!@qwQW"))
+                    .role(AccountRole.MANAGER)
+                    .build();
+
+            accountRepository.save(admin);
+        }
     }
 
     public void initStudents() {

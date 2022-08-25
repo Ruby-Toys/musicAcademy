@@ -132,18 +132,13 @@ const student = reactive<{
 const studentAddApi = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
-    if (valid) {
-      axios.post("/api/students", student)
-          .then(res => router.replace({ name: "students"}))
-          .catch((err) => {
-            const result = err.response.data;
-            alert(result.message);
-          });
-      alert("submit!")
-    } else {
-      alert("error!")
-      return false
-    }
+    if (!valid) return false;
+    axios.post("/api/students", student)
+        .then(res => router.replace({ name: "students"}))
+        .catch((err) => {
+          const result = err.response.data;
+          alert(result.message);
+        });
   })
 }
 

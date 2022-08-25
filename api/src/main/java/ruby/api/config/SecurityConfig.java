@@ -45,8 +45,7 @@ public class SecurityConfig {
                 .antMatchers("/teachers/**").hasRole("MANAGER")
                 .antMatchers("/schedules/**").hasRole("MANAGER")
                 .antMatchers("/payments/**").hasRole("MANAGER")
-                .anyRequest().authenticated()
-                .expressionHandler(expressionHandler());
+                .anyRequest().authenticated();
 
 
         // add(get, post), {boardId}/edit (get)
@@ -71,19 +70,6 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    /**
-     * 권한 계층 설정
-     * @return
-     */
-    private DefaultWebSecurityExpressionHandler expressionHandler() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER");
-
-        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
-        expressionHandler.setRoleHierarchy(roleHierarchy);
-
-        return expressionHandler;
-    }
 
     /**
      * CORS 설정

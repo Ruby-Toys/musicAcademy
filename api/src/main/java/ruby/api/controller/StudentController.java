@@ -48,4 +48,9 @@ public class StudentController {
     public void patch(@PathVariable Long id, @RequestBody @Valid StudentUpdate studentUpdate) {
         studentService.edit(id, studentUpdate);
     }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        studentService.delete(id);
+    }
 }

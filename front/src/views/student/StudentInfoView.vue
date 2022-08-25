@@ -44,7 +44,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="editStudentApi">수정</el-button>
-        <el-button type="danger" @click="movePaymentProcess">결제하기</el-button>
+        <el-button type="success" @click="movePaymentProcess">결제하기</el-button>
+        <el-button type="danger" @click="deleteStudentApi">삭제</el-button>
       </el-form-item>
     </el-form>
     <el-timeline>
@@ -75,7 +76,6 @@ const schedules = ref([]);
 const studentStore = useStudentStore();
 const student = ref({...studentStore.getStudent})
 
-// TODO - 회원 정보 수정, 결제 페이지 이동
 const editStudentApi = () => {
   axios.patch(`/api/students/${student.value.id}`, student.value)
       .then(res => {
@@ -86,6 +86,20 @@ const editStudentApi = () => {
         const result = err.response.data;
         alert(result.message);
       });
+}
+
+const deleteStudentApi = () => {
+  if (confirm("수강생 정보를 삭제하시겠습니까?")) {
+    axios.delete(`/api/students/${student.value.id}`)
+        .then(res => {
+          alert("수강생 정보가 삭제되었습니다.");
+          router.replace({ name: "students"})
+        })
+        .catch((err) => {
+          const result = err.response.data;
+          alert(result.message);
+        });
+  }
 }
 
 const movePaymentProcess = () => {

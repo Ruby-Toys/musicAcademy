@@ -51,4 +51,10 @@ public class StudentService {
         student.setGrade(studentUpdate.getGrade());
         student.setMemo(studentUpdate.getMemo());
     }
+
+    public void delete(Long id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(StudentNotFoundException::new);
+        studentRepository.delete(student);
+    }
 }
