@@ -26,12 +26,15 @@ public class StudentInfoSchedulesResponse {
         private Long id;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime start;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime end;
         private String state;
         private String teacherName;
 
         public ScheduleItem(Schedule schedule) {
             this.id = schedule.getId();
-            this.start = schedule.getAppointmentTime();
+            this.start = schedule.getStart();
+            this.end = schedule.getEnd();
             this.state = schedule.getState().name();
             this.teacherName = schedule.getTeacher().getName();
         }

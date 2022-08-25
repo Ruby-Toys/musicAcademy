@@ -1,4 +1,4 @@
-package ruby.api.request.student.resolver;
+package ruby.api.resolver;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -7,32 +7,32 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import ruby.api.request.student.StudentPost;
-import ruby.api.request.student.StudentPatch;
+import ruby.api.request.schedule.ScheduleSearch;
 import ruby.core.domain.enums.Course;
-import ruby.core.domain.enums.Grade;
 
 import javax.servlet.http.HttpServletRequest;
 
 @RequiredArgsConstructor
 @Component
-public class StudentPostArgumentResolver implements HandlerMethodArgumentResolver {
+public class ScheduleSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
+    /**
+     * 컨트롤러 메서드의 특정 파라미터를 지원하는지 판단
+     * @param parameter
+     * @return
+     */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return StudentPost.class.equals(parameter.getParameterType());
+        // UserAccount 타입의 파라미터가 있는지 확인
+        return ScheduleSearch.class.equals(parameter.getParameterType());
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return StudentPatch.builder()
-                .name((String)request.getAttribute("name"))
-                .email((String)request.getAttribute("email"))
-                .phoneNumber((String)request.getAttribute("phoneNumber"))
+        return ScheduleSearch.builder()
+                .appointmentTime((String)request.getAttribute("appointmentTime"))
                 .course(Course.valueOf((String)request.getAttribute("course")))
-                .grade(Grade.valueOf((String)request.getAttribute("grade")))
-                .memo((String)request.getAttribute("memo"))
                 .build();
     }
 }

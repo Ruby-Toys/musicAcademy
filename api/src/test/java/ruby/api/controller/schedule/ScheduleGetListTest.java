@@ -79,27 +79,34 @@ class ScheduleGetListTest {
         teacherRepository.save(teacher);
         LocalDateTime now = LocalDateTime.now();
         List<Schedule> schedules = IntStream.range(0, 4)
-                .mapToObj(idx -> Schedule.builder()
-                        .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonthValue() - 1, (idx + 1) * 6,
-                                        10 + idx, 0))
-                        .state(ScheduleState.COMPLETED)
-                        .student(student)
-                        .teacher(teacher)
-                        .build()
-                )
+                .mapToObj(idx -> {
+                    LocalDateTime start = LocalDateTime.of(
+                            now.getYear(), now.getMonthValue() - 1, (idx + 1) * 6, 10 + idx, 0);
+
+                    return Schedule.builder()
+                            .start(start)
+                            .end(start.plusHours(1))
+                            .state(ScheduleState.COMPLETED)
+                            .student(student)
+                            .teacher(teacher)
+                            .build();
+
+                })
                 .collect(Collectors.toList());
         scheduleRepository.saveAll(schedules);
         schedules = IntStream.range(0, 4)
-                .mapToObj(idx -> Schedule.builder()
-                        .appointmentTime(
-                                LocalDateTime.of(now.getYear(), now.getMonth(), (idx + 1) * 6,
-                                        10 + idx, 0))
-                        .state(ScheduleState.NOT_STARTED)
-                        .student(student)
-                        .teacher(teacher)
-                        .build()
-                )
+                .mapToObj(idx -> {
+                    LocalDateTime start = LocalDateTime.of(
+                            now.getYear(), now.getMonth(), (idx + 1) * 6, 10 + idx, 0);
+
+                    return Schedule.builder()
+                            .start(start)
+                            .end(start.plusHours(1))
+                            .state(ScheduleState.NOT_STARTED)
+                            .student(student)
+                            .teacher(teacher)
+                            .build();
+                })
                 .collect(Collectors.toList());
         scheduleRepository.saveAll(schedules);
     }

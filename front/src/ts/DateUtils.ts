@@ -6,4 +6,14 @@ const getWeekOfMonth = (dateFrom = new Date()) => {
     return parseInt(String(((weekDay - 1) + day) / 7)) + 1;
 }
 
-export {getWeekOfMonth};
+const localDateTimeFormatter = (dateFrom = new Date()) => {
+    const year = dateFrom.getFullYear();
+    const month = ('0' + (dateFrom.getMonth() + 1)).slice(-2);
+    const day = ('0' + dateFrom.getDate()).slice(-2);
+    const hour = ('0' + dateFrom.getHours()).slice(-2);
+    const minutes = ('0' + dateFrom.getMinutes()).slice(-2);
+
+    return year + "-" + month + "-" + day + " " + hour + ":" + minutes + ":00";
+}
+
+export {getWeekOfMonth, localDateTimeFormatter};

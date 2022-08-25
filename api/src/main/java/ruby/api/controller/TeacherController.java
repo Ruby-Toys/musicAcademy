@@ -5,12 +5,16 @@ import org.springframework.web.bind.annotation.*;
 import ruby.api.request.student.StudentPost;
 import ruby.api.request.teacher.TeacherPatch;
 import ruby.api.request.teacher.TeacherPost;
+import ruby.api.response.student.StudentsByCourseResponse;
 import ruby.api.response.teacher.TeacherInfoSchedulesResponse;
+import ruby.api.response.teacher.TeachersByCourseResponse;
 import ruby.api.response.teacher.TeachersResponse;
 import ruby.api.service.ScheduleService;
 import ruby.api.service.TeacherService;
 import ruby.core.domain.Schedule;
+import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
+import ruby.core.domain.enums.Course;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -31,9 +35,13 @@ public class TeacherController {
     @GetMapping
     public TeachersResponse getList() {
         List<Teacher> teachers = teacherService.getList();
-
-        // 검색어, 페이지 번호
         return new TeachersResponse(teachers);
+    }
+
+    @GetMapping("/course")
+    public TeachersByCourseResponse getListByCourse(Course course) {
+        List<Teacher> teachers = teacherService.getListByCourse(course);
+        return new TeachersByCourseResponse(teachers);
     }
 
     @GetMapping("/{id}/schedules")

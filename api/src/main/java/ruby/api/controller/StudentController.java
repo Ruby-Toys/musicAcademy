@@ -9,10 +9,12 @@ import ruby.api.request.student.StudentPatch;
 import ruby.api.request.student.StudentSearch;
 import ruby.api.response.student.StudentInfoSchedulesResponse;
 import ruby.api.response.student.StudentsResponse;
+import ruby.api.response.student.StudentsByCourseResponse;
 import ruby.api.service.ScheduleService;
 import ruby.api.service.StudentService;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
+import ruby.core.domain.enums.Course;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -35,6 +37,12 @@ public class StudentController {
     public StudentsResponse getList(@Valid StudentSearch studentSearch) {
         Page<Student> studentPage = studentService.getList(studentSearch);
         return new StudentsResponse(studentPage);
+    }
+
+    @GetMapping("/course")
+    public StudentsByCourseResponse getListByCourse(Course course) {
+        List<Student> students = studentService.getListByCourse(course);
+        return new StudentsByCourseResponse(students);
     }
 
     @GetMapping("/{id}/schedules")

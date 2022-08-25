@@ -13,13 +13,14 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id")
-@Getter
+@Getter @Setter
 public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDateTime appointmentTime;
+    private LocalDateTime start;
+    private LocalDateTime end;
     @Enumerated(value = EnumType.STRING)
     private ScheduleState state;
     @ManyToOne(fetch = LAZY)
@@ -30,8 +31,9 @@ public class Schedule {
     private Student student;
 
     @Builder
-    public Schedule(LocalDateTime appointmentTime, ScheduleState state, Teacher teacher, Student student) {
-        this.appointmentTime = appointmentTime;
+    public Schedule(LocalDateTime start, LocalDateTime end, ScheduleState state, Teacher teacher, Student student) {
+        this.start = start;
+        this.end = end;
         this.state = state;
         this.teacher = teacher;
         this.student = student;

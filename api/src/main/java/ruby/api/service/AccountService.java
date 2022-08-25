@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +28,20 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AccountService {
+public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession httpSession;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
+
+        // Principal 대상 클래스인 UserAccount 객체 반환
+        return new UserAccount(account);
+    }
 
     @Transactional
     public Account signUp(String name, String password) {
@@ -44,7 +56,6 @@ public class AccountService {
 
         return accountRepository.save(account);
     }
-
 
     public void login(AccountLogin accountLogin) {
         Account account = accountRepository.findByName(accountLogin.getName())
@@ -61,7 +72,6 @@ public class AccountService {
         setAuthentication(account);
     }
 
-    
     public List<Account> getList() {
         return accountRepository.findAll();
     }

@@ -51,7 +51,7 @@ public class SecurityConfig {
         // add(get, post), {boardId}/edit (get)
 
         /** 로그인 처리 */
-//        http.formLogin().disable();
+        http.formLogin().disable();
 
         /** 로그아웃 처리 */
         http.logout()

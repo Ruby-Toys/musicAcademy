@@ -61,8 +61,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         LocalDateTime end = LocalDateTime.of(time.getYear(), time.getMonth(), time.getDayOfMonth(), 0, 0)
                 .plusDays(7 - dayOfWeek.ordinal());
 
-        return schedule.appointmentTime.goe(start)
-                        .and(schedule.appointmentTime.lt(end));
+        return schedule.start.goe(start).and(schedule.end.before(end));
     }
 
 
@@ -70,7 +69,6 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         LocalDateTime start = LocalDateTime.of(time.getYear(), time.getMonth(), 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(time.getYear(), time.getMonthValue() + 1, 1, 0, 0);
 
-        return schedule.appointmentTime.goe(start)
-                .and(schedule.appointmentTime.before(end));
+        return schedule.start.goe(start).and(schedule.end.before(end));
     }
 }

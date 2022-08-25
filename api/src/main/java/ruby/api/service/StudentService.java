@@ -11,7 +11,10 @@ import ruby.api.request.student.StudentPost;
 import ruby.api.request.student.StudentPatch;
 import ruby.api.request.student.StudentSearch;
 import ruby.core.domain.Student;
+import ruby.core.domain.enums.Course;
 import ruby.core.repository.StudentRepository;
+
+import java.util.List;
 
 import static java.lang.Math.max;
 
@@ -38,6 +41,10 @@ public class StudentService {
     public Page<Student> getList(StudentSearch search) {
         Pageable pageable = PageRequest.of(max(0, search.getPage() - 1), StudentSearch.PAGE_SIZE);
         return studentRepository.findByNameContains(search.getWord(), pageable);
+    }
+
+    public List<Student> getListByCourse(Course course) {
+        return studentRepository.findByCourseOrderByName(course);
     }
 
     public void update(Long id, StudentPatch studentPatch) {

@@ -8,6 +8,7 @@ import ruby.api.request.teacher.TeacherPatch;
 import ruby.api.request.teacher.TeacherPost;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
+import ruby.core.domain.enums.Course;
 import ruby.core.repository.TeacherRepository;
 
 import java.util.List;
@@ -33,6 +34,10 @@ public class TeacherService {
     public List<Teacher> getList() {
         // 선생님 수는 많지 않으므로 페이징 하지 않고 전체 조회한다.
         return teacherRepository.findByOrderByCourseAscCreateAtDesc();
+    }
+
+    public List<Teacher> getListByCourse(Course course) {
+        return teacherRepository.findByCourseOrderByName(course);
     }
 
     public void update(Long id, TeacherPatch teacherPatch) {

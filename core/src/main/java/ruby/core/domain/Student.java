@@ -30,6 +30,9 @@ public class Student extends BaseEntity{
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Schedule> schedules;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Payment> payments;
+
     @Builder
     public Student(String name, String email, String phoneNumber, Course course, Grade grade, String memo) {
         this.name = name;
