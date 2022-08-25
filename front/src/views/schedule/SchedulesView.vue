@@ -1,8 +1,6 @@
 <template>
   <el-container class="schedulesContainer">
     <el-aside>
-      <div id="asideCalendar">
-      </div>
       <el-menu>
         <el-menu-item
             v-for="item in COURSE"
@@ -12,12 +10,14 @@
           {{item.label}}
         </el-menu-item>
       </el-menu>
-
     </el-aside>
     <el-main>
       <div class="calendar-nav">
         <el-button @click="calendarPrev">Prev</el-button>
         <el-button @click="calendarNext">Next</el-button>
+        <div>
+          {{weekText}}
+        </div>
       </div>
       <div id="mainCalendar">
       </div>
@@ -28,38 +28,26 @@
 <script lang="ts" setup>
 import Calendar from "@toast-ui/calendar";
 import {COURSE} from "/src/ts/course";
+import {getWeekOfMonth} from "/src/ts/DateUtils";
 import {onMounted, ref} from "vue";
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
 import axios from "axios";
 
-let asideCalendar;
+const searchForm = ref({
+  course: COURSE.PIANO.value,
+  appointmentTime: new Date()
+})
+const schedules = ref([]);
+const weekText = ref(`${searchForm.value.appointmentTime.getMonth() + 1}월 ${getWeekOfMonth(searchForm.value.appointmentTime)}주차`);
+
 let mainCalendar;
-const createAsideCalendar = () => {
-  const options: object = {
-    month: {
-      dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-    },
-    defaultView: "month",
-    timezone: {
-      zones: [
-        {
-          timezoneName: "Asia/Seoul",
-          displayLabel: "Seoul",
-        },
-      ],
-    },
-
-  };
-  asideCalendar = new Calendar('#asideCalendar', options);
-};
-
 const createMainCalendar = () => {
   const options: object = {
     week: {
       taskView: false,
       eventView: ["time"],
-      dayNames: ['월', '화', '수', '목', '금', '토', '일'],
+      dayNames: ['일', '월', '화', '수', '목', '금', '토'],
       startDayOfWeek: 1,
       hourStart: 9,
       hourEnd: 23,
@@ -79,39 +67,45 @@ const createMainCalendar = () => {
   mainCalendar = new Calendar('#mainCalendar', options);
 };
 
-const calendarPrev = () => {
-  mainCalendar.prev();
-  // 화면을 넘기고 기간에 맞는 목록을 조회한다.
-}
-const calendarNext = () => {
-  mainCalendar.next();
-  // 화면을 넘기고 기간에 맞는 목록을 조회한다.
-}
-
-const getTodayStr = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
-  const day = today.getDate();
+const getDateStr = (date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
   return  year + (month < 10 ? '-0' : "-") + month + (day < 10 ? '-0' : "-") + day;
 }
 
-const searchForm = ref({
-  course: COURSE.PIANO.value,
-  appointmentTime: getTodayStr()
-})
-const schedules = ref([]);
-
 const getCourseList = (course) => {
   searchForm.value.course = course;
-  searchForm.value.appointmentTime = getTodayStr();
+  searchForm.value.appointmentTime = new Date();
   getListApi();
+  mainCalendar.today();
+}
+
+const calendarPrev = () => {
+  const prevDate = searchForm.value.appointmentTime.getDate() - 7;
+  searchForm.value.appointmentTime.setDate(prevDate);
+  getListApi();
+  mainCalendar.prev();
+}
+const calendarNext = () => {
+  const prevDate = searchForm.value.appointmentTime.getDate() + 7;
+  searchForm.value.appointmentTime.setDate(prevDate);
+  getListApi();
+  mainCalendar.next();
 }
 
 const getListApi = () => {
-  axios.get("/api/schedules", {params: searchForm.value})
+  axios.get("/api/schedules",
+      {
+        params:
+            {
+              course: searchForm.value.course,
+              appointmentTime: getDateStr(searchForm.value.appointmentTime)
+      }})
       .then(res => {
         schedules.value = [];
+        mainCalendar.clear();
+        weekText.value = `${searchForm.value.appointmentTime.getMonth() + 1}월 ${getWeekOfMonth(searchForm.value.appointmentTime)}주차`;
         res.data.contents.forEach(schedule => {
           schedules.value.push({
             id: schedule.id,
@@ -132,13 +126,9 @@ const getListApi = () => {
 };
 
 onMounted(() => {
-  createAsideCalendar();
   createMainCalendar();
-  // 현재 날짜가 속한 주 단위의 기간의 스케쥴을 조회한다.
   getListApi();
 });
-
-
 </script>
 
 <style scoped>
@@ -174,7 +164,18 @@ onMounted(() => {
 }
 
 .calendar-nav {
+  position: relative;
+  display: flex;
   height: 50px;
+  align-items: center;
+}
+
+.calendar-nav > div {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  font-weight: 600;
 }
 
 #mainCalendar {
