@@ -1,11 +1,10 @@
 package ruby.api.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ruby.api.response.student.StudentInfoSchedulesResponse;
+import org.springframework.web.bind.annotation.*;
+import ruby.api.request.student.StudentPost;
+import ruby.api.request.teacher.TeacherPatch;
+import ruby.api.request.teacher.TeacherPost;
 import ruby.api.response.teacher.TeacherInfoSchedulesResponse;
 import ruby.api.response.teacher.TeachersResponse;
 import ruby.api.service.ScheduleService;
@@ -13,6 +12,7 @@ import ruby.api.service.TeacherService;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Teacher;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,6 +22,11 @@ public class TeacherController {
 
     private final TeacherService teacherService;
     private final ScheduleService scheduleService;
+
+    @PostMapping
+    public void post(@RequestBody @Valid TeacherPost teacherPost) {
+        teacherService.add(teacherPost);
+    }
 
     @GetMapping
     public TeachersResponse getList() {
@@ -35,5 +40,15 @@ public class TeacherController {
     public TeacherInfoSchedulesResponse getSchedules(@PathVariable Long id) {
         List<Schedule> schedules = scheduleService.getListByTeacher(id);
         return new TeacherInfoSchedulesResponse(schedules);
+    }
+
+    @PatchMapping("/{id}")
+    public void patch(@PathVariable Long id, @RequestBody @Valid TeacherPatch teacherPatch) {
+        teacherService.update(id, teacherPatch);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        teacherService.delete(id);
     }
 }

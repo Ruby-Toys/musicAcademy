@@ -11,7 +11,7 @@ import ruby.core.domain.enums.Grade;
 
 @Getter @Setter
 @Builder
-public class StudentUpdate {
+public class StudentPost {
 
     @NamePattern
     private String name;

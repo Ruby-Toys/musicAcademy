@@ -1,9 +1,6 @@
 package ruby.core.domain;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ruby.core.domain.enums.Course;
 
@@ -13,7 +10,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(value = AuditingEntityListener.class)
-@Getter
+@Getter @Setter
 public class Teacher extends BaseEntity{
 
     private String name;

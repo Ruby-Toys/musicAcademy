@@ -12,7 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
-import ruby.api.request.student.StudentAdd;
+import ruby.api.request.student.StudentPost;
 import ruby.api.valid.EmailPattern;
 import ruby.api.valid.NamePattern;
 import ruby.api.valid.PhonePattern;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @WithMockUser(username = "test", roles = "MANAGER")
-public class StudentAddTest {
+public class StudentPostTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -51,7 +51,7 @@ public class StudentAddTest {
     @DisplayName("잘못된 필드로 수강생 정보 등록")
     void post_wrongField() throws Exception {
         // given
-        StudentAdd student = StudentAdd.builder()
+        StudentPost student = StudentPost.builder()
                 .name("!@#")
                 .email("testnaver.com")
                 .phoneNumber("01023233423123")
@@ -76,7 +76,7 @@ public class StudentAddTest {
     @DisplayName("수강생 정보 수정")
     void postStudent() throws Exception {
         // given
-        StudentAdd student = StudentAdd.builder()
+        StudentPost student = StudentPost.builder()
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")

@@ -12,7 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
-import ruby.api.request.student.StudentUpdate;
+import ruby.api.request.student.StudentPatch;
 import ruby.api.valid.EmailPattern;
 import ruby.api.valid.NamePattern;
 import ruby.api.valid.PhonePattern;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @WithMockUser(username = "test", roles = "MANAGER")
-public class StudentEditTest {
+public class StudentPatchTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -62,7 +62,7 @@ public class StudentEditTest {
     void edit_wrongField() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
-        StudentUpdate studentUpdate = StudentUpdate.builder()
+        StudentPatch studentPatch = StudentPatch.builder()
                 .name("!@#")
                 .email("testnaver.com")
                 .phoneNumber("01023233423123")
@@ -72,7 +72,7 @@ public class StudentEditTest {
         // when
         mockMvc.perform(patch("/students/{id}", student.getId() + 999)
                         .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(studentUpdate))
+                        .content(mapper.writeValueAsString(studentPatch))
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
@@ -88,7 +88,7 @@ public class StudentEditTest {
     void edit_noneStudent() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
-        StudentUpdate studentUpdate = StudentUpdate.builder()
+        StudentPatch studentPatch = StudentPatch.builder()
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
@@ -100,7 +100,7 @@ public class StudentEditTest {
         // when
         mockMvc.perform(patch("/students/{id}", student.getId() + 999)
                         .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(studentUpdate))
+                        .content(mapper.writeValueAsString(studentPatch))
                 )
                 .andExpect(status().isBadRequest())
                 .andDo(print());
@@ -121,7 +121,7 @@ public class StudentEditTest {
     void edit() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
-        StudentUpdate studentUpdate = StudentUpdate.builder()
+        StudentPatch studentPatch = StudentPatch.builder()
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
@@ -133,7 +133,7 @@ public class StudentEditTest {
         // when
         mockMvc.perform(patch("/students/{id}", student.getId())
                         .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(studentUpdate))
+                        .content(mapper.writeValueAsString(studentPatch))
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -141,11 +141,11 @@ public class StudentEditTest {
         // then
         Student updatedStudent = studentRepository.findAll().get(0);
         assertThat(student.getId()).isEqualTo(updatedStudent.getId());
-        assertThat(updatedStudent.getName()).isEqualTo(studentUpdate.getName());
-        assertThat(updatedStudent.getEmail()).isEqualTo(studentUpdate.getEmail());
-        assertThat(updatedStudent.getPhoneNumber()).isEqualTo(studentUpdate.getPhoneNumber());
-        assertThat(updatedStudent.getCourse()).isEqualTo(studentUpdate.getCourse());
-        assertThat(updatedStudent.getGrade()).isEqualTo(studentUpdate.getGrade());
-        assertThat(updatedStudent.getMemo()).isEqualTo(studentUpdate.getMemo());
+        assertThat(updatedStudent.getName()).isEqualTo(studentPatch.getName());
+        assertThat(updatedStudent.getEmail()).isEqualTo(studentPatch.getEmail());
+        assertThat(updatedStudent.getPhoneNumber()).isEqualTo(studentPatch.getPhoneNumber());
+        assertThat(updatedStudent.getCourse()).isEqualTo(studentPatch.getCourse());
+        assertThat(updatedStudent.getGrade()).isEqualTo(studentPatch.getGrade());
+        assertThat(updatedStudent.getMemo()).isEqualTo(studentPatch.getMemo());
     }
 }

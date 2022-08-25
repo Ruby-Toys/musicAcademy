@@ -1,4 +1,4 @@
-package ruby.api.controller.student;
+package ruby.api.controller.teacher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,15 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import ruby.api.exception.student.StudentNotFoundException;
-import ruby.core.domain.Student;
+import ruby.api.exception.teacher.TeacherNotFoundException;
+import ruby.core.domain.Teacher;
 import ruby.core.domain.enums.Course;
-import ruby.core.domain.enums.Grade;
-import ruby.core.repository.StudentRepository;
+import ruby.core.repository.TeacherRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,68 +26,64 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @WithMockUser(username = "test", roles = "MANAGER")
-public class StudentDeleteTest {
+public class TeacherDeleteTest {
 
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper mapper;
     @Autowired
-    StudentRepository studentRepository;
+    TeacherRepository teacherRepository;
 
     @BeforeEach
     void before() {
-        studentRepository.deleteAll();
+        teacherRepository.deleteAll();
     }
 
     @Test
-    @DisplayName("존재하지 않는 수강생 정보 삭제")
-    void deleteStudent_noneStudent() throws Exception {
+    @DisplayName("존재하지 않는 선생님 정보 삭제")
+    void deleteTeacher_noneTeacher() throws Exception {
         // given
-        Student student = Student.builder()
+        Teacher teacher = Teacher.builder()
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
                 .course(Course.FLUTE)
-                .grade(Grade.BEGINNER)
-                .memo("수강생 신규 등록")
                 .build();
-        studentRepository.save(student);
+        teacherRepository.save(teacher);
 
         // when
-        mockMvc.perform(delete("/students/{id}", student.getId() + 999))
+        mockMvc.perform(delete("/teachers/{id}", teacher.getId() + 999))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(StudentNotFoundException.MESSAGE))
+                .andExpect(jsonPath("$.message").value(TeacherNotFoundException.MESSAGE))
                 .andDo(print());
 
         // then
-        Student findStudent = studentRepository.findById(student.getId()).orElse(null);
-        assertThat(findStudent).isNotNull();
-        assertThat(findStudent.getId()).isEqualTo(student.getId());
+        Teacher findTeacher = teacherRepository.findById(teacher.getId()).orElse(null);
+        assertThat(findTeacher).isNotNull();
+        assertThat(findTeacher.getId()).isEqualTo(teacher.getId());
     }
 
     @Test
-    @DisplayName("수강생 정보 삭제")
-    void deleteStudent() throws Exception {
+    @DisplayName("선생님 정보 삭제")
+    void deleteTeacher() throws Exception {
         // given
-        Student student = Student.builder()
+        Teacher teacher = Teacher.builder()
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
                 .course(Course.FLUTE)
-                .grade(Grade.BEGINNER)
-                .memo("수강생 신규 등록")
                 .build();
-        studentRepository.save(student);
+        teacherRepository.save(teacher);
 
         // when
-        mockMvc.perform(delete("/students/{id}", student.getId()))
+        mockMvc.perform(delete("/teachers/{id}", teacher.getId()))
                 .andExpect(status().isOk())
                 .andDo(print());
 
         // then
-        Student findStudent = studentRepository.findById(student.getId()).orElse(null);
-        assertThat(findStudent).isNull();
+        Teacher findTeacher = teacherRepository.findById(teacher.getId()).orElse(null);
+        assertThat(findTeacher).isNull();
     }
 }
