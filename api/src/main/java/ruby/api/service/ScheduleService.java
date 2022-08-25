@@ -30,4 +30,8 @@ public class ScheduleService {
 
         return scheduleRepository.findByStudent(id);
     }
+
+    public List<Schedule> getListByTeacher(Long id) {
+        return scheduleRepository.findByTeacher(id);
+    }
 }

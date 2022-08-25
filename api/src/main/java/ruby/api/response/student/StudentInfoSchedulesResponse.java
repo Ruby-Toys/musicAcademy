@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class StudentInfoScheduleResponse {
+public class StudentInfoSchedulesResponse {
 
     private List<ScheduleItem> contents;
 
-    public StudentInfoScheduleResponse(List<Schedule> schedules) {
+    public StudentInfoSchedulesResponse(List<Schedule> schedules) {
         this.contents = schedules.stream()
                 .map(ScheduleItem::new)
                 .collect(Collectors.toList());

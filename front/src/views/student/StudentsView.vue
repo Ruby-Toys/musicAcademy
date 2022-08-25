@@ -30,7 +30,7 @@ import {COURSE} from "/src/js/course";
 import {GRADE} from "/src/js/grade";
 import axios from "axios";
 import router from "@/router";
-import {useStudentStore} from "@/store/student";
+import {useStudentStore} from "@/store/studentStore";
 
 const students = ref([]);
 const word = ref('');
@@ -71,7 +71,6 @@ const gradeFormatter = (student) => {
 }
 
 const moveInfo = (student) => {
-  // router.push({ name: "studentInfo" , params: {studentId: row.id}});
   const studentStore = useStudentStore();
   studentStore.set(student);
   router.push({ name: "studentInfo"});

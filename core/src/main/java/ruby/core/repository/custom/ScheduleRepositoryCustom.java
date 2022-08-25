@@ -11,4 +11,6 @@ public interface ScheduleRepositoryCustom {
     List<Schedule> findByCourseAndWeek(Course course, LocalDateTime appointmentTime);
 
     List<Schedule> findByStudent(Long id);
+
+    List<Schedule> findByTeacher(Long id);
 }

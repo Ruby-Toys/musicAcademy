@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import {useStudentStore} from "@/store/student";
+import {useStudentStore} from "@/store/studentStore";
 import {onMounted, ref} from "vue";
 import {COURSE} from "/src/js/course";
 import {GRADE} from "/src/js/grade";

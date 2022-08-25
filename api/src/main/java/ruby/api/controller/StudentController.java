@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ruby.api.request.student.StudentAdd;
 import ruby.api.request.student.StudentUpdate;
 import ruby.api.request.student.StudentSearch;
-import ruby.api.response.student.StudentInfoScheduleResponse;
+import ruby.api.response.student.StudentInfoSchedulesResponse;
 import ruby.api.response.student.StudentsResponse;
 import ruby.api.service.ScheduleService;
 import ruby.api.service.StudentService;
@@ -39,9 +39,9 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/schedules")
-    public StudentInfoScheduleResponse getSchedules(@PathVariable Long id) {
+    public StudentInfoSchedulesResponse getSchedules(@PathVariable Long id) {
         List<Schedule> schedules = scheduleService.getListByStudent(id);
-        return new StudentInfoScheduleResponse(schedules);
+        return new StudentInfoSchedulesResponse(schedules);
     }
 
     @PatchMapping("/{id}")

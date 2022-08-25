@@ -41,7 +41,15 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
                 .where(schedule.student.id.eq(id), monthCondition(LocalDateTime.now()))
                 .orderBy(schedule.id.desc())
                 .fetch();
+    }
 
+    @Override
+    public List<Schedule> findByTeacher(Long id) {
+        return queryFactory.selectFrom(schedule)
+                .leftJoin(schedule.student, student).fetchJoin()
+                .where(schedule.teacher.id.eq(id))
+                .orderBy(schedule.id.desc())
+                .fetch();
     }
 
 

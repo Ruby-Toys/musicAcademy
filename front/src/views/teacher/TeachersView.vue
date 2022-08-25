@@ -16,6 +16,7 @@ import {onMounted, ref} from "vue";
 import {COURSE} from "/src/js/course";
 import axios from "axios";
 import router from "@/router";
+import {useTeacherStore} from "@/store/teacherStore";
 
 const teachers = ref([]);
 const getList = () => {
@@ -34,8 +35,10 @@ const getList = () => {
       });
 }
 
-const moveInfo = (row) => {
-  router.push({ name: "teacherInfo" , params: {studentId: row.id}});
+const moveInfo = (teacher) => {
+  const teacherStore = useTeacherStore();
+  teacherStore.set(teacher);
+  router.push({ name: "teacherInfo"});
 }
 
 onMounted(() => {
