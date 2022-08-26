@@ -1,11 +1,9 @@
 package ruby.api.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import ruby.api.exception.schedule.ScheduleWrongDateException;
+import ruby.api.exception.schedule.ScheduleNotEqualsDayException;
+import ruby.api.exception.PeriodException;
 import ruby.api.request.schedule.SchedulePatch;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.request.schedule.ScheduleSearch;
@@ -27,8 +25,11 @@ public class ScheduleController {
 
     @PostMapping
     public ScheduleResponse post(@RequestBody @Valid SchedulePost schedulePost) {
-        if (!DateUtils.compareDateString(schedulePost.getStart(), schedulePost.getEnd())) {
-            throw new ScheduleWrongDateException();
+        if (!DateUtils.compareToLocalDateTimeString(schedulePost.getStart(), schedulePost.getEnd())) {
+            throw new PeriodException();
+        }
+        if (!DateUtils.equalsDay(schedulePost.getStart(), schedulePost.getEnd())) {
+            throw new ScheduleNotEqualsDayException();
         }
 
         Schedule schedule = scheduleService.add(schedulePost);
@@ -43,8 +44,11 @@ public class ScheduleController {
 
     @PatchMapping("/{id}")
     public ScheduleResponse patch(@PathVariable Long id, @RequestBody @Valid SchedulePatch schedulePatch) {
-        if (!DateUtils.compareDateString(schedulePatch.getStart(), schedulePatch.getEnd())) {
-            throw new ScheduleWrongDateException();
+        if (!DateUtils.compareToLocalDateTimeString(schedulePatch.getStart(), schedulePatch.getEnd())) {
+            throw new PeriodException();
+        }
+        if (!DateUtils.equalsDay(schedulePatch.getStart(), schedulePatch.getEnd())) {
+            throw new ScheduleNotEqualsDayException();
         }
 
         Schedule schedule = scheduleService.update(id, schedulePatch);

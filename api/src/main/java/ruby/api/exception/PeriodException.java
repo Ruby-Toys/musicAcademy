@@ -1,13 +1,12 @@
-package ruby.api.exception.schedule;
+package ruby.api.exception;
 
 import org.springframework.http.HttpStatus;
-import ruby.api.exception.BusinessException;
 
-public class ScheduleWrongDateException extends BusinessException {
+public class PeriodException extends BusinessException {
 
     public static final String MESSAGE = "시작 날짜는 종료 날짜 이전이어야 합니다.";
 
-    public ScheduleWrongDateException() {
+    public PeriodException() {
         super(MESSAGE);
     }
 

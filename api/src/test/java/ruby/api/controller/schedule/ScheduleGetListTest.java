@@ -131,7 +131,7 @@ class ScheduleGetListTest {
     @DisplayName("잘못된 과목으로 스케쥴 조회")
     void getList_wrongCourse() throws Exception {
 
-        String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
+        String appointmentTime = LocalDateTime.now().format(DateUtils.localDateTimeFormatter());
         mockMvc.perform(get("/schedules")
                         .param("course", "DRUM")
                         .param("appointmentTime", appointmentTime)
@@ -147,7 +147,7 @@ class ScheduleGetListTest {
     @DisplayName("수강생이 없는 과목으로 스케쥴 조회")
     void getList_noneCourse() throws Exception {
         // given
-        String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
+        String appointmentTime = LocalDateTime.now().format(DateUtils.localDateTimeFormatter());
 
         ScheduleSearch search = ScheduleSearch.builder()
                         .course(Course.VIOLIN.name())
@@ -168,7 +168,7 @@ class ScheduleGetListTest {
     void getList_noneAppointmentTime() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue() + 3, LocalDateTime.now().getDayOfMonth(), 0, 0);
-        String appointmentTime = now.format(DateUtils.formatter());
+        String appointmentTime = now.format(DateUtils.localDateTimeFormatter());
 
         ScheduleSearch search = ScheduleSearch.builder()
                 .course(Course.VIOLIN.name())
@@ -188,7 +188,7 @@ class ScheduleGetListTest {
     @DisplayName("스케쥴 조회")
     void getList() throws Exception {
         // given
-        String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
+        String appointmentTime = LocalDateTime.now().format(DateUtils.localDateTimeFormatter());
 
         ScheduleSearch search = ScheduleSearch.builder()
                 .course(Course.VIOLIN.name())

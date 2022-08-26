@@ -166,6 +166,10 @@ const createMainCalendar = () => {
             + `<div style="color: black; font-size: 13px;">Teacher: ${event.location}</div>`;
       },
     },
+    gridSelection: {
+      enableDblClick: false,
+      enableClick: false,
+    },
   };
   mainCalendar = new Calendar('#mainCalendar', options);
 };

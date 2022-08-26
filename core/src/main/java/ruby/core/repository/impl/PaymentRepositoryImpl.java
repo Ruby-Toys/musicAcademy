@@ -6,39 +6,35 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.util.StringUtils;
-import ruby.core.domain.QSchedule;
-import ruby.core.domain.QStudent;
-import ruby.core.domain.Student;
-import ruby.core.repository.custom.StudentRepositoryCustom;
+import ruby.core.domain.Payment;
+import ruby.core.repository.custom.PaymentRepositoryCustom;
 
 import java.util.List;
-import java.util.Optional;
 
-import static ruby.core.domain.QSchedule.*;
-import static ruby.core.domain.QStudent.*;
+import static ruby.core.domain.QPayment.payment;
+import static ruby.core.domain.QStudent.student;
 
 @RequiredArgsConstructor
-public class StudentRepositoryImpl implements StudentRepositoryCustom {
+public class PaymentRepositoryImpl implements PaymentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Student> findByNameContains(String word, Pageable pageable) {
-
-        List<Student> students = queryFactory.selectFrom(student)
+    public Page<Payment> findByNameContains(String word, Pageable pageable) {
+        List<Payment> payments = queryFactory.selectFrom(payment)
+                .leftJoin(payment.student, student).fetchJoin()
                 .where(searchCondition(word))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
-                .orderBy(student.id.desc())
+                .orderBy(payment.id.desc())
                 .fetch();
 
-        int size = queryFactory.selectFrom(student)
+        int size = queryFactory.selectFrom(payment)
                 .where(searchCondition(word))
                 .fetch()
                 .size();
 
-        return PageableExecutionUtils.getPage(students, pageable, () -> size);
+        return PageableExecutionUtils.getPage(payments, pageable, () -> size);
     }
 
     private Predicate searchCondition(String word) {

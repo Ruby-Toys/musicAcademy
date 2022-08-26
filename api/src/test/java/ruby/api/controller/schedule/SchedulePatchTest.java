@@ -12,8 +12,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
+import ruby.api.exception.schedule.ScheduleNotEqualsDayException;
 import ruby.api.exception.schedule.ScheduleNotFoundException;
-import ruby.api.exception.schedule.ScheduleWrongDateException;
+import ruby.api.exception.PeriodException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePatch;
@@ -131,7 +132,7 @@ public class SchedulePatchTest {
                 .build();
         teacherRepository.save(teacher);
 
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId() + 999)
@@ -165,7 +166,7 @@ public class SchedulePatchTest {
                 .build();
         teacherRepository.save(teacher);
 
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId() + 999)
                 .teacherId(teacher.getId())
@@ -199,7 +200,7 @@ public class SchedulePatchTest {
                 .build();
         teacherRepository.save(teacher);
 
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId())
@@ -269,7 +270,7 @@ public class SchedulePatchTest {
                 .build();
         teacherRepository.save(teacher);
 
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId())
@@ -285,7 +286,42 @@ public class SchedulePatchTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(ScheduleWrongDateException.MESSAGE))
+                .andExpect(jsonPath("$.message").value(PeriodException.MESSAGE))
+                .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("스케줄 시작과 종료가 서로 다른 날로 스케줄 수정")
+    void edit_notEqualsDay() throws Exception {
+        // given
+        Schedule schedule = scheduleRepository.findAll().get(0);
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = Teacher.builder()
+                .name("newTeacher")
+                .email("qewe@naver.com")
+                .phoneNumber("010-1111-2222")
+                .course(student.getCourse())
+                .build();
+        teacherRepository.save(teacher);
+
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
+        SchedulePatch schedulePatch = SchedulePatch.builder()
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .start(LocalDateTime.now().format(formatter))
+                .end(LocalDateTime.now().plusDays(1).format(formatter))
+                .scheduleState(ScheduleState.COMPLETED.name())
+                .build();
+
+        // when
+        mockMvc.perform(patch("/schedules/{id}", schedule.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePatch))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ScheduleNotEqualsDayException.MESSAGE))
                 .andDo(print());
     }
 
@@ -304,7 +340,7 @@ public class SchedulePatchTest {
                 .build();
         teacherRepository.save(teacher);
 
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId())

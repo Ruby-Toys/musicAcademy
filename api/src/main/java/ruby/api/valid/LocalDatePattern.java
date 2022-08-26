@@ -1,6 +1,6 @@
 package ruby.api.valid;
 
-import ruby.api.valid.validator.DateValidator;
+import ruby.api.valid.validator.LocalDateValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,9 +13,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target(FIELD)
 @Retention(RUNTIME)
-@Constraint(validatedBy = DateValidator.class)
+@Constraint(validatedBy = LocalDateValidator.class)
 @Documented
-public @interface DatePattern {
+public @interface LocalDatePattern {
 
     String MESSAGE = "날짜 형식이 올바르지 않습니다.";
 

@@ -42,7 +42,7 @@ public class ScheduleService {
 
         if (!student.getCourse().equals(teacher.getCourse())) throw new CourseDiscordException();
 
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         LocalDateTime start = LocalDateTime.parse(schedulePost.getStart(), formatter);
         LocalDateTime end = LocalDateTime.parse(schedulePost.getEnd(), formatter);
 
@@ -61,7 +61,7 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<Schedule> getList(ScheduleSearch search) {
-        LocalDateTime appointmentTime = LocalDateTime.parse(search.getAppointmentTime(), DateUtils.formatter());
+        LocalDateTime appointmentTime = LocalDateTime.parse(search.getAppointmentTime(), DateUtils.localDateTimeFormatter());
 
         // 스케쥴은 시작날짜와 끝날짜를 입력받아 검색한다.
         return scheduleRepository.findByCourseAndWeek(Course.valueOf(search.getCourse()), appointmentTime);
@@ -88,8 +88,8 @@ public class ScheduleService {
         Teacher teacher = teacherRepository.findById(schedulePatch.getTeacherId())
                 .orElseThrow(TeacherNotFoundException::new);
 
-        LocalDateTime start = LocalDateTime.parse(schedulePatch.getStart(), DateUtils.formatter());
-        LocalDateTime end = LocalDateTime.parse(schedulePatch.getEnd(), DateUtils.formatter());
+        LocalDateTime start = LocalDateTime.parse(schedulePatch.getStart(), DateUtils.localDateTimeFormatter());
+        LocalDateTime end = LocalDateTime.parse(schedulePatch.getEnd(), DateUtils.localDateTimeFormatter());
         boolean isExists = scheduleRepository.existsByTime(start, end, student.getCourse());
         if (isExists) throw new ScheduleExistsTimeException();
 

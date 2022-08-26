@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.exception.schedule.CourseDiscordException;
 import ruby.api.exception.schedule.ScheduleExistsTimeException;
-import ruby.api.exception.schedule.ScheduleWrongDateException;
+import ruby.api.exception.schedule.ScheduleNotEqualsDayException;
+import ruby.api.exception.PeriodException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePost;
@@ -95,7 +96,7 @@ public class SchedulePostTest {
                 .build();
         teacherRepository.save(teacher);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
@@ -146,7 +147,7 @@ public class SchedulePostTest {
         // given
         Teacher teacher = teacherRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
@@ -171,7 +172,7 @@ public class SchedulePostTest {
         // given
         Student student = studentRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
@@ -198,7 +199,7 @@ public class SchedulePostTest {
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.plusHours(1).format(formatter))
                 .end(now.format(formatter))
@@ -213,7 +214,7 @@ public class SchedulePostTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(ScheduleWrongDateException.MESSAGE))
+                .andExpect(jsonPath("$.message").value(PeriodException.MESSAGE))
                 .andDo(print());
     }
 
@@ -223,7 +224,7 @@ public class SchedulePostTest {
         // given
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = LocalDateTime.now().plusHours(1);
         Schedule schedule = Schedule.builder()
@@ -236,8 +237,8 @@ public class SchedulePostTest {
         scheduleRepository.save(schedule);
 
         SchedulePost schedulePost = SchedulePost.builder()
-                .start(start.plusMinutes(30).format(formatter))
-                .end(end.plusHours(1).format(formatter))
+                .start(start.format(formatter))
+                .end(end.format(formatter))
                 .studentId(student.getId())
                 .teacherId(teacher.getId())
                 .build();
@@ -254,13 +255,41 @@ public class SchedulePostTest {
     }
 
     @Test
+    @DisplayName("시작 날짜와 종료 날짜의 일 값이 다른 스케줄 등록")
+    void postSchedule_notEqualsDay() throws Exception {
+        // given
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = teacherRepository.findAll().get(0);
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+
+        SchedulePost schedulePost = SchedulePost.builder()
+                .start(start.format(formatter))
+                .end(end.format(formatter))
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .build();
+
+        // when
+        mockMvc.perform(post("/schedules")
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePost))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ScheduleNotEqualsDayException.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("스케줄 등록")
     void postSchedule() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateUtils.formatter();
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))

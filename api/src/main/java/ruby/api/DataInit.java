@@ -5,18 +5,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import ruby.core.domain.Account;
-import ruby.core.domain.Schedule;
-import ruby.core.domain.Student;
-import ruby.core.domain.Teacher;
+import ruby.core.domain.*;
 import ruby.core.domain.enums.AccountRole;
 import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.Grade;
 import ruby.core.domain.enums.ScheduleState;
-import ruby.core.repository.AccountRepository;
-import ruby.core.repository.ScheduleRepository;
-import ruby.core.repository.StudentRepository;
-import ruby.core.repository.TeacherRepository;
+import ruby.core.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +29,7 @@ public class DataInit implements CommandLineRunner {
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
     private final ScheduleRepository scheduleRepository;
+    private final PaymentRepository paymentRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -43,6 +38,7 @@ public class DataInit implements CommandLineRunner {
         initStudents();
         initTeachers();
         initSchedules();
+        initPayment();
     }
 
     public void initAccount() {
@@ -80,7 +76,7 @@ public class DataInit implements CommandLineRunner {
                             .name("student" + ++idx)
                             .course(idx % 2 == 0 ? Course.VIOLIN : Course.PIANO)
                             .email("student" + idx + "@naver.com")
-                            .grade(Grade.BEGINNER)
+                            .grade(idx % 2 == 0 ? Grade.BEGINNER : Grade.INTERMEDIATE)
                             .phoneNumber("01011112222")
                             .memo("악기 연주에 소질이 있음")
                             .build()
@@ -108,42 +104,45 @@ public class DataInit implements CommandLineRunner {
     }
 
     public void initSchedules() {
-        Student student1 = studentRepository.findAll().get(0);
-        Teacher teacher1 = teacherRepository.findAll().get(0);
+        List<Student> students = studentRepository.findAll();
+        List<Teacher> teachers = teacherRepository.findAll();
 
         LocalDateTime now = LocalDateTime.now();
-        List<Schedule> schedules = IntStream.range(0, 4)
-                .mapToObj(idx -> {
-                    LocalDateTime start = LocalDateTime.of(now.getYear(), now.getMonth(),
-                            (idx + 1) * 6,  10 + idx, 0);
+        IntStream.range(0, 2)
+                .forEach(index -> {
+                    List<Schedule> schedules = IntStream.range(0, 4)
+                            .mapToObj(idx -> {
+                                LocalDateTime start = LocalDateTime.of(now.getYear(), now.getMonth(),
+                                        (idx + 1) * 6,  10 + idx, 0);
 
-                    return Schedule.builder()
-                            .start(start)
-                            .end(start.plusHours(1))
-                            .state(idx < 2 ? ScheduleState.COMPLETED : ScheduleState.NOT_STARTED)
-                            .student(student1)
-                            .teacher(teacher1)
-                            .build();
-                })
-                .collect(Collectors.toList());
-        scheduleRepository.saveAll(schedules);
+                                return Schedule.builder()
+                                        .start(start)
+                                        .end(start.plusHours(1))
+                                        .state(idx < 2 ? ScheduleState.COMPLETED : ScheduleState.NOT_STARTED)
+                                        .student(students.get(index))
+                                        .teacher(teachers.get(index))
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+                    scheduleRepository.saveAll(schedules);
+                });
+    }
 
-        Student student2 = studentRepository.findAll().get(1);
-        Teacher teacher2 = teacherRepository.findAll().get(1);
-        schedules = IntStream.range(0, 4)
-                .mapToObj(idx -> {
-                    LocalDateTime start = LocalDateTime.of(now.getYear(), now.getMonth(),
-                            (idx + 1) * 6,  10 + idx, 0);
+    public void initPayment() {
+        List<Student> students = studentRepository.findAll();
 
-                    return Schedule.builder()
-                        .start(start)
-                        .end(start.plusHours(1))
-                        .state(idx < 2 ? ScheduleState.COMPLETED : ScheduleState.NOT_STARTED)
-                        .student(student2)
-                        .teacher(teacher2)
-                        .build();
-                })
-                .collect(Collectors.toList());
-        scheduleRepository.saveAll(schedules);
+        for (Student student : students) {
+            List<Payment> payments = IntStream.range(0, 15)
+                    .mapToObj(idx -> {
+                        Payment payment = Payment.builder()
+                                .student(student)
+                                .amount(student.getGrade().getAmount())
+                                .build();
+                        payment.setCreateAt(LocalDateTime.now().minusMonths(idx));
+                        return payment;
+                    })
+                    .collect(Collectors.toList());
+            paymentRepository.saveAll(payments);
+        }
     }
 }
