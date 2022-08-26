@@ -132,17 +132,17 @@ public class DataInit implements CommandLineRunner {
         List<Student> students = studentRepository.findAll();
 
         for (Student student : students) {
-            List<Payment> payments = IntStream.range(0, 15)
-                    .mapToObj(idx -> {
+            IntStream.range(0, 15)
+                    .forEach(idx -> {
                         Payment payment = Payment.builder()
                                 .student(student)
                                 .amount(student.getGrade().getAmount())
                                 .build();
-                        payment.setCreateAt(LocalDateTime.now().minusMonths(idx));
-                        return payment;
-                    })
-                    .collect(Collectors.toList());
-            paymentRepository.saveAll(payments);
+                        paymentRepository.save(payment);
+                        payment.setCreateAt(LocalDateTime.now().minusMonths(15 - idx));
+                        paymentRepository.save(payment);
+                    });
         }
     }
+
 }

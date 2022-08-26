@@ -38,7 +38,7 @@ const searchForm = ref({
   word: "",
   page: 1
 })
-const pageSize = ref(10);
+const pageSize = ref(15);
 const totalCount = ref(0);
 const getListApi = (page) => {
   searchForm.value.page = page;
