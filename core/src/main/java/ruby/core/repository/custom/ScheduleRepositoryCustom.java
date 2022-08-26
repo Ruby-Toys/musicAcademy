@@ -16,4 +16,6 @@ public interface ScheduleRepositoryCustom {
     List<Schedule> findByTeacher(Long id);
 
     Optional<Schedule> findByIdWithStudent(Long id);
+
+    boolean existsByTime(LocalDateTime start, LocalDateTime end, Course course);
 }

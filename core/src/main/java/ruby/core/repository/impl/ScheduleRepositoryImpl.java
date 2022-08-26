@@ -63,6 +63,14 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         return Optional.ofNullable(findSchedule);
     }
 
+    @Override
+    public boolean existsByTime(LocalDateTime start, LocalDateTime end, Course course) {
+        Schedule fetchFirst = queryFactory.selectFrom(schedule)
+                .where(schedule.start.before(end), schedule.end.after(start), schedule.student.course.eq(course))
+                .fetchFirst();
+        return fetchFirst != null;
+    }
+
 
     private Predicate weekCondition(LocalDateTime time) {
         DayOfWeek dayOfWeek = time.getDayOfWeek();

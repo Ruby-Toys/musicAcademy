@@ -13,16 +13,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.exception.schedule.CourseDiscordException;
+import ruby.api.exception.schedule.ScheduleExistsTimeException;
 import ruby.api.exception.schedule.ScheduleWrongDateException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.utils.DateUtils;
 import ruby.api.valid.LocalDateTimePattern;
+import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
 import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.Grade;
+import ruby.core.domain.enums.ScheduleState;
 import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
 import ruby.core.repository.TeacherRepository;
@@ -211,6 +214,42 @@ public class SchedulePostTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.message").value(ScheduleWrongDateException.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("이미 스케줄이 잡힌 시간에 스케줄 등록")
+    void postSchedule_existsTime() throws Exception {
+        // given
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = teacherRepository.findAll().get(0);
+        DateTimeFormatter formatter = DateUtils.formatter();
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusHours(1);
+        Schedule schedule = Schedule.builder()
+                .student(student)
+                .teacher(teacher)
+                .start(start)
+                .end(end)
+                .state(ScheduleState.NOT_STARTED)
+                .build();
+        scheduleRepository.save(schedule);
+
+        SchedulePost schedulePost = SchedulePost.builder()
+                .start(start.plusMinutes(30).format(formatter))
+                .end(end.plusHours(1).format(formatter))
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .build();
+
+        // when
+        mockMvc.perform(post("/schedules")
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePost))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ScheduleExistsTimeException.MESSAGE))
                 .andDo(print());
     }
 

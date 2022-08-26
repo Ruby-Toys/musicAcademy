@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.exception.schedule.CourseDiscordException;
+import ruby.api.exception.schedule.ScheduleExistsTimeException;
 import ruby.api.exception.schedule.ScheduleNotFoundException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
@@ -45,6 +46,9 @@ public class ScheduleService {
         LocalDateTime start = LocalDateTime.parse(schedulePost.getStart(), formatter);
         LocalDateTime end = LocalDateTime.parse(schedulePost.getEnd(), formatter);
 
+        boolean isExists = scheduleRepository.existsByTime(start, end, student.getCourse());
+        if (isExists) throw new ScheduleExistsTimeException();
+
         Schedule schedule = Schedule.builder()
                 .start(start)
                 .end(end)
@@ -84,9 +88,13 @@ public class ScheduleService {
         Teacher teacher = teacherRepository.findById(schedulePatch.getTeacherId())
                 .orElseThrow(TeacherNotFoundException::new);
 
-        DateTimeFormatter formatter = DateUtils.formatter();
-        schedule.setStart(LocalDateTime.parse(schedulePatch.getStart(), formatter));
-        schedule.setEnd(LocalDateTime.parse(schedulePatch.getEnd(), formatter));
+        LocalDateTime start = LocalDateTime.parse(schedulePatch.getStart(), DateUtils.formatter());
+        LocalDateTime end = LocalDateTime.parse(schedulePatch.getEnd(), DateUtils.formatter());
+        boolean isExists = scheduleRepository.existsByTime(start, end, student.getCourse());
+        if (isExists) throw new ScheduleExistsTimeException();
+
+        schedule.setStart(start);
+        schedule.setEnd(end);
         schedule.setTeacher(teacher);
         schedule.setState(ScheduleState.valueOf(schedulePatch.getScheduleState()));
 
