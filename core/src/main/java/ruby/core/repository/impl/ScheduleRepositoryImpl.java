@@ -13,6 +13,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static ruby.core.domain.QSchedule.schedule;
 import static ruby.core.domain.QStudent.student;
@@ -50,6 +51,16 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
                 .where(schedule.teacher.id.eq(id))
                 .orderBy(schedule.id.desc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<Schedule> findByIdWithStudent(Long id) {
+        Schedule findSchedule = queryFactory.selectFrom(schedule)
+                .leftJoin(schedule.student, student).fetchJoin()
+                .where(schedule.id.eq(id))
+                .fetchOne();
+
+        return Optional.ofNullable(findSchedule);
     }
 
 

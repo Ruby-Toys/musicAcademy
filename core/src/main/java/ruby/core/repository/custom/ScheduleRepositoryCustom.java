@@ -5,6 +5,7 @@ import ruby.core.domain.enums.Course;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ScheduleRepositoryCustom {
 
@@ -13,4 +14,6 @@ public interface ScheduleRepositoryCustom {
     List<Schedule> findByStudent(Long id);
 
     List<Schedule> findByTeacher(Long id);
+
+    Optional<Schedule> findByIdWithStudent(Long id);
 }

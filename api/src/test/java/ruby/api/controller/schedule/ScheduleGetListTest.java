@@ -13,9 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.request.schedule.ScheduleSearch;
 import ruby.api.service.ScheduleService;
-import ruby.api.utils.LocalDateTimeFormatter;
+import ruby.api.utils.DateUtils;
 import ruby.api.valid.CoursePattern;
-import ruby.api.valid.DatePattern;
 import ruby.api.valid.LocalDateTimePattern;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
@@ -29,7 +28,6 @@ import ruby.core.repository.TeacherRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -134,7 +132,7 @@ class ScheduleGetListTest {
     @WithMockUser(username = "test", roles = "MANAGER")
     void getList_wrongCourse() throws Exception {
 
-        String appointmentTime = LocalDateTime.now().format(LocalDateTimeFormatter.formatter());
+        String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
         mockMvc.perform(get("/schedules")
                         .param("course", "DRUM")
                         .param("appointmentTime", appointmentTime)
@@ -151,7 +149,7 @@ class ScheduleGetListTest {
     @WithMockUser(username = "test", roles = "MANAGER")
     void getList_noneCourse() throws Exception {
         // given
-        String appointmentTime = LocalDateTime.now().format(LocalDateTimeFormatter.formatter());
+        String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
 
         ScheduleSearch search = ScheduleSearch.builder()
                         .course(Course.VIOLIN.name())
@@ -173,7 +171,7 @@ class ScheduleGetListTest {
     void getList_noneAppointmentTime() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue() + 3, LocalDateTime.now().getDayOfMonth(), 0, 0);
-        String appointmentTime = now.format(LocalDateTimeFormatter.formatter());
+        String appointmentTime = now.format(DateUtils.formatter());
 
         ScheduleSearch search = ScheduleSearch.builder()
                 .course(Course.VIOLIN.name())
@@ -194,7 +192,7 @@ class ScheduleGetListTest {
     @WithMockUser(username = "test", roles = "MANAGER")
     void getList() throws Exception {
         // given
-        String appointmentTime = LocalDateTime.now().format(LocalDateTimeFormatter.formatter());
+        String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
 
         ScheduleSearch search = ScheduleSearch.builder()
                 .course(Course.VIOLIN.name())

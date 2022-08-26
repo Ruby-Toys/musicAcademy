@@ -10,7 +10,7 @@ import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePatch;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.request.schedule.ScheduleSearch;
-import ruby.api.utils.LocalDateTimeFormatter;
+import ruby.api.utils.DateUtils;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
@@ -41,7 +41,7 @@ public class ScheduleService {
 
         if (!student.getCourse().equals(teacher.getCourse())) throw new CourseDiscordException();
 
-        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        DateTimeFormatter formatter = DateUtils.formatter();
         LocalDateTime start = LocalDateTime.parse(schedulePost.getStart(), formatter);
         LocalDateTime end = LocalDateTime.parse(schedulePost.getEnd(), formatter);
 
@@ -57,7 +57,7 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<Schedule> getList(ScheduleSearch search) {
-        LocalDateTime appointmentTime = LocalDateTime.parse(search.getAppointmentTime(), LocalDateTimeFormatter.formatter());
+        LocalDateTime appointmentTime = LocalDateTime.parse(search.getAppointmentTime(), DateUtils.formatter());
 
         // 스케쥴은 시작날짜와 끝날짜를 입력받아 검색한다.
         return scheduleRepository.findByCourseAndWeek(Course.valueOf(search.getCourse()), appointmentTime);
@@ -72,19 +72,25 @@ public class ScheduleService {
         return scheduleRepository.findByTeacher(id);
     }
 
-    public void update(Long id, SchedulePatch schedulePatch) {
-        Schedule schedule = scheduleRepository.findById(id)
+    public Schedule update(Long id, SchedulePatch schedulePatch) {
+        Schedule schedule = scheduleRepository.findByIdWithStudent(id)
                 .orElseThrow(ScheduleNotFoundException::new);
+
+        Student student = schedule.getStudent();
+        if (!student.getId().equals(schedulePatch.getStudentId())) {
+            throw new StudentNotFoundException();
+        }
 
         Teacher teacher = teacherRepository.findById(schedulePatch.getTeacherId())
                 .orElseThrow(TeacherNotFoundException::new);
 
-        // todo - 시간 및 선생님, 스케쥴 상태 변경 가능하게 수정 및 테스트 진행
-        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        DateTimeFormatter formatter = DateUtils.formatter();
         schedule.setStart(LocalDateTime.parse(schedulePatch.getStart(), formatter));
         schedule.setEnd(LocalDateTime.parse(schedulePatch.getEnd(), formatter));
         schedule.setTeacher(teacher);
         schedule.setState(ScheduleState.valueOf(schedulePatch.getScheduleState()));
+
+        return schedule;
     }
 
     public void delete(Long id) {

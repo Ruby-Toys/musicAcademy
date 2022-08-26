@@ -13,28 +13,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.exception.schedule.CourseDiscordException;
+import ruby.api.exception.schedule.ScheduleWrongDateException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePost;
-import ruby.api.request.student.StudentPost;
-import ruby.api.utils.LocalDateTimeFormatter;
-import ruby.api.valid.EmailPattern;
+import ruby.api.utils.DateUtils;
 import ruby.api.valid.LocalDateTimePattern;
-import ruby.api.valid.NamePattern;
-import ruby.api.valid.PhonePattern;
-import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
 import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.Grade;
-import ruby.core.domain.enums.ScheduleState;
 import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
 import ruby.core.repository.TeacherRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -98,7 +92,7 @@ public class SchedulePostTest {
                 .build();
         teacherRepository.save(teacher);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        DateTimeFormatter formatter = DateUtils.formatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
@@ -149,7 +143,7 @@ public class SchedulePostTest {
         // given
         Teacher teacher = teacherRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        DateTimeFormatter formatter = DateUtils.formatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
@@ -174,7 +168,7 @@ public class SchedulePostTest {
         // given
         Student student = studentRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        DateTimeFormatter formatter = DateUtils.formatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
@@ -193,6 +187,33 @@ public class SchedulePostTest {
                 .andDo(print());
     }
 
+
+    @Test
+    @DisplayName("스케줄 시작 시간이 종료 시간 보다 이전으로 스케줄 등록")
+    void postSchedule_wrongDate() throws Exception {
+        // given
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = teacherRepository.findAll().get(0);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateUtils.formatter();
+        SchedulePost schedulePost = SchedulePost.builder()
+                .start(now.plusHours(1).format(formatter))
+                .end(now.format(formatter))
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .build();
+
+        // when
+        mockMvc.perform(post("/schedules")
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePost))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ScheduleWrongDateException.MESSAGE))
+                .andDo(print());
+    }
+
     @Test
     @DisplayName("스케줄 등록")
     void postSchedule() throws Exception {
@@ -200,7 +221,7 @@ public class SchedulePostTest {
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        DateTimeFormatter formatter = DateUtils.formatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))

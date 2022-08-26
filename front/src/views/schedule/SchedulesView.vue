@@ -56,8 +56,8 @@
           <el-date-picker
               v-model="scheduleForm.start"
               type="date"
-              label="스케쥴 시작 시간"
-              placeholder="스케쥴 시작 시간"
+              label="스케쥴 날짜"
+              placeholder="스케쥴 날짜"
               :disabled="scheduleFormState"
           />
         </el-form-item>
@@ -113,7 +113,6 @@ import {onMounted, reactive, ref} from "vue";
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
 import axios from "axios";
-import router from "@/router";
 
 const searchForm = ref({
   course: COURSE.PIANO.value,
@@ -124,6 +123,7 @@ const weekText = ref(`${searchForm.value.appointmentTime.getMonth() + 1}월 ${ge
 const dialogFormVisible = ref(false);
 const scheduleFormState = ref(false);   // true : 등록, false : 변경
 const scheduleForm = reactive({
+  calendarId: 'mainCalendar',
   scheduleId: '',
   studentId: '',
   teacherId: '',
@@ -212,7 +212,7 @@ const getListApi = () => {
         res.data.contents.forEach(schedule => {
           schedules.value.push({
             id: schedule.id,
-            calendarId: 'mainCalendar',
+            calendarId: scheduleForm.calendarId,
             title: schedule.studentName,
             location: schedule.teacherName,
             start: schedule.start,
@@ -264,7 +264,18 @@ const postApi = () => {
       })
       .then(res => {
         alert("스케줄이 등록되었습니다.");
-        router.go(0);
+        const schedule = res.data;
+        mainCalendar.createEvents([{
+          id: schedule.id,
+          calendarId: scheduleForm.calendarId,
+          title: schedule.studentName,
+          location: schedule.teacherName,
+          start: schedule.start,
+          end: schedule.end,
+          backgroundColor: schedule.state === STATE.NOT_STARTED.value ? "#03bd9e" : "#FF6D6A",
+          body: schedule
+        }]);
+        dialogFormVisible.value = false;
       })
       .catch(err => {
         const result = err.response.data;
@@ -274,6 +285,7 @@ const postApi = () => {
 
 const patchApi = () => {
   axios.patch(`/api/schedules/${scheduleForm.scheduleId}`, {
+    studentId: scheduleForm.studentId,
     teacherId: scheduleForm.teacherId,
     start: localDateTimeFormatter(scheduleForm.start),
     end: localDateTimeFormatter(scheduleForm.end),
@@ -281,7 +293,20 @@ const patchApi = () => {
   })
       .then(res => {
         alert("스케줄이 변경되었습니다.");
-        router.go(0);
+        // 변경된 스케쥴을 가져온다.
+        const schedule = res.data;
+        mainCalendar.updateEvent(
+            scheduleForm.scheduleId,
+            scheduleForm.calendarId,
+            {
+              location: schedule.teacherName,
+              start: schedule.start,
+              end: schedule.end,
+              backgroundColor: schedule.state === STATE.NOT_STARTED.value ? "#03bd9e" : "#FF6D6A",
+              body: schedule
+            }
+        );
+        dialogFormVisible.value = false;
       })
       .catch(err => {
         const result = err.response.data;

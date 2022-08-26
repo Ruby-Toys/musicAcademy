@@ -12,12 +12,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
+import ruby.api.exception.schedule.ScheduleNotFoundException;
+import ruby.api.exception.schedule.ScheduleWrongDateException;
+import ruby.api.exception.student.StudentNotFoundException;
+import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePatch;
-import ruby.api.request.student.StudentPatch;
-import ruby.api.utils.LocalDateTimeFormatter;
-import ruby.api.valid.EmailPattern;
-import ruby.api.valid.NamePattern;
-import ruby.api.valid.PhonePattern;
+import ruby.api.utils.DateUtils;
+import ruby.api.valid.LocalDateTimePattern;
+import ruby.api.valid.ScheduleStatePattern;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
@@ -115,9 +117,181 @@ public class SchedulePatchTest {
         scheduleRepository.saveAll(schedules);
     }
 
+    @Test
+    @DisplayName("존재하지 않는 선생님으로 스케줄 수정")
+    void edit_noneTeacher() throws Exception {
+        // given
+        Schedule schedule = scheduleRepository.findAll().get(0);
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = Teacher.builder()
+                .name("newTeacher")
+                .email("qewe@naver.com")
+                .phoneNumber("010-1111-2222")
+                .course(student.getCourse())
+                .build();
+        teacherRepository.save(teacher);
+
+        DateTimeFormatter formatter = DateUtils.formatter();
+        SchedulePatch schedulePatch = SchedulePatch.builder()
+                .studentId(student.getId())
+                .teacherId(teacher.getId() + 999)
+                .start(LocalDateTime.now().format(formatter))
+                .end(LocalDateTime.now().plusHours(1).format(formatter))
+                .scheduleState(ScheduleState.COMPLETED.name())
+                .build();
+
+        // when
+        mockMvc.perform(patch("/schedules/{id}", schedule.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePatch))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(TeacherNotFoundException.MESSAGE))
+                .andDo(print());
+    }
 
     @Test
-    @DisplayName("수강생 정보 수정")
+    @DisplayName("존재하지 수강생의 스케줄 수정")
+    void edit_noneStudent() throws Exception {
+        // given
+        Schedule schedule = scheduleRepository.findAll().get(0);
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = Teacher.builder()
+                .name("newTeacher")
+                .email("qewe@naver.com")
+                .phoneNumber("010-1111-2222")
+                .course(student.getCourse())
+                .build();
+        teacherRepository.save(teacher);
+
+        DateTimeFormatter formatter = DateUtils.formatter();
+        SchedulePatch schedulePatch = SchedulePatch.builder()
+                .studentId(student.getId() + 999)
+                .teacherId(teacher.getId())
+                .start(LocalDateTime.now().format(formatter))
+                .end(LocalDateTime.now().plusHours(1).format(formatter))
+                .scheduleState(ScheduleState.COMPLETED.name())
+                .build();
+
+        // when
+        mockMvc.perform(patch("/schedules/{id}", schedule.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePatch))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(StudentNotFoundException.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 스케줄 수정")
+    void edit_noneSchedule() throws Exception {
+        // given
+        Schedule schedule = scheduleRepository.findAll().get(0);
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = Teacher.builder()
+                .name("newTeacher")
+                .email("qewe@naver.com")
+                .phoneNumber("010-1111-2222")
+                .course(student.getCourse())
+                .build();
+        teacherRepository.save(teacher);
+
+        DateTimeFormatter formatter = DateUtils.formatter();
+        SchedulePatch schedulePatch = SchedulePatch.builder()
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .start(LocalDateTime.now().format(formatter))
+                .end(LocalDateTime.now().plusHours(1).format(formatter))
+                .scheduleState(ScheduleState.COMPLETED.name())
+                .build();
+
+        // when
+        mockMvc.perform(patch("/schedules/{id}", schedule.getId() + 999)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePatch))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ScheduleNotFoundException.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("잘못된 필드로 스케줄 수정")
+    void edit_wrongField() throws Exception {
+        // given
+        Schedule schedule = scheduleRepository.findAll().get(0);
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = Teacher.builder()
+                .name("newTeacher")
+                .email("qewe@naver.com")
+                .phoneNumber("010-1111-2222")
+                .course(student.getCourse())
+                .build();
+        teacherRepository.save(teacher);
+
+        SchedulePatch schedulePatch = SchedulePatch.builder()
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .start("20222213")
+                .end("2011-10-22")
+                .scheduleState("BAD")
+                .build();
+
+        // when
+        mockMvc.perform(patch("/schedules/{id}", schedule.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePatch))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ExceptionController.BIND_EXCEPTION_MESSAGE))
+                .andExpect(jsonPath("$.validation.start").value(LocalDateTimePattern.MESSAGE))
+                .andExpect(jsonPath("$.validation.end").value(LocalDateTimePattern.MESSAGE))
+                .andExpect(jsonPath("$.validation.scheduleState").value(ScheduleStatePattern.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("스케줄 시작 시간이 종료 시간 보다 이전으로 스케줄 수정")
+    void edit_wrongDate() throws Exception {
+        // given
+        Schedule schedule = scheduleRepository.findAll().get(0);
+        Student student = studentRepository.findAll().get(0);
+        Teacher teacher = Teacher.builder()
+                .name("newTeacher")
+                .email("qewe@naver.com")
+                .phoneNumber("010-1111-2222")
+                .course(student.getCourse())
+                .build();
+        teacherRepository.save(teacher);
+
+        DateTimeFormatter formatter = DateUtils.formatter();
+        SchedulePatch schedulePatch = SchedulePatch.builder()
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .start(LocalDateTime.now().plusHours(1).format(formatter))
+                .end(LocalDateTime.now().format(formatter))
+                .scheduleState(ScheduleState.COMPLETED.name())
+                .build();
+
+        // when
+        mockMvc.perform(patch("/schedules/{id}", schedule.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePatch))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ScheduleWrongDateException.MESSAGE))
+                .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("스케줄 수정")
     void edit() throws Exception {
         // given
         Schedule schedule = scheduleRepository.findAll().get(0);
@@ -130,8 +304,9 @@ public class SchedulePatchTest {
                 .build();
         teacherRepository.save(teacher);
 
-        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        DateTimeFormatter formatter = DateUtils.formatter();
         SchedulePatch schedulePatch = SchedulePatch.builder()
+                .studentId(student.getId())
                 .teacherId(teacher.getId())
                 .start(LocalDateTime.now().format(formatter))
                 .end(LocalDateTime.now().plusHours(1).format(formatter))

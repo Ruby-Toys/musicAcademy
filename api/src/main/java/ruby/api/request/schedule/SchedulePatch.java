@@ -11,6 +11,7 @@ import ruby.core.domain.enums.Grade;
 @Builder
 public class SchedulePatch {
 
+    private Long studentId;
     private Long teacherId;
     @LocalDateTimePattern
     private String start;

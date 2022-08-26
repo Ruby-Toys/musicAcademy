@@ -1,13 +1,18 @@
 package ruby.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import ruby.api.exception.schedule.ScheduleWrongDateException;
 import ruby.api.request.schedule.SchedulePatch;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.request.schedule.ScheduleSearch;
 import ruby.api.response.schedule.ScheduleResponse;
 import ruby.api.response.schedule.SchedulesResponse;
 import ruby.api.service.ScheduleService;
+import ruby.api.utils.DateUtils;
 import ruby.core.domain.Schedule;
 
 import javax.validation.Valid;
@@ -22,6 +27,10 @@ public class ScheduleController {
 
     @PostMapping
     public ScheduleResponse post(@RequestBody @Valid SchedulePost schedulePost) {
+        if (!DateUtils.compareDateString(schedulePost.getStart(), schedulePost.getEnd())) {
+            throw new ScheduleWrongDateException();
+        }
+
         Schedule schedule = scheduleService.add(schedulePost);
         return new ScheduleResponse(schedule);
     }
@@ -33,8 +42,13 @@ public class ScheduleController {
     }
 
     @PatchMapping("/{id}")
-    public void patch(@PathVariable Long id, @RequestBody @Valid SchedulePatch schedulePatch) {
-        scheduleService.update(id, schedulePatch);
+    public ScheduleResponse patch(@PathVariable Long id, @RequestBody @Valid SchedulePatch schedulePatch) {
+        if (!DateUtils.compareDateString(schedulePatch.getStart(), schedulePatch.getEnd())) {
+            throw new ScheduleWrongDateException();
+        }
+
+        Schedule schedule = scheduleService.update(id, schedulePatch);
+        return new ScheduleResponse(schedule);
     }
 
     @DeleteMapping("/{id}")
