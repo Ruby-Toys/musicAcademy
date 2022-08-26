@@ -7,6 +7,7 @@ import ruby.api.exception.schedule.CourseDiscordException;
 import ruby.api.exception.schedule.ScheduleNotFoundException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
+import ruby.api.request.schedule.SchedulePatch;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.request.schedule.ScheduleSearch;
 import ruby.api.utils.LocalDateTimeFormatter;
@@ -71,11 +72,19 @@ public class ScheduleService {
         return scheduleRepository.findByTeacher(id);
     }
 
-    public void update(Long id) {
+    public void update(Long id, SchedulePatch schedulePatch) {
         Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(StudentNotFoundException::new);
+                .orElseThrow(ScheduleNotFoundException::new);
 
-        schedule.setState(ScheduleState.COMPLETED);
+        Teacher teacher = teacherRepository.findById(schedulePatch.getTeacherId())
+                .orElseThrow(TeacherNotFoundException::new);
+
+        // todo - 시간 및 선생님, 스케쥴 상태 변경 가능하게 수정 및 테스트 진행
+        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        schedule.setStart(LocalDateTime.parse(schedulePatch.getStart(), formatter));
+        schedule.setEnd(LocalDateTime.parse(schedulePatch.getEnd(), formatter));
+        schedule.setTeacher(teacher);
+        schedule.setState(ScheduleState.valueOf(schedulePatch.getScheduleState()));
     }
 
     public void delete(Long id) {

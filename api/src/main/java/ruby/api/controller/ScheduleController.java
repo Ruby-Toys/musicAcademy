@@ -2,6 +2,7 @@ package ruby.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ruby.api.request.schedule.SchedulePatch;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.request.schedule.ScheduleSearch;
 import ruby.api.response.schedule.ScheduleResponse;
@@ -32,10 +33,8 @@ public class ScheduleController {
     }
 
     @PatchMapping("/{id}")
-    public void patch(@PathVariable Long id) {
-        // todo - 시간 및 선생님, 스케쥴 상태 변경 가능하게 수정 및 테스트 진행
-
-        scheduleService.update(id);
+    public void patch(@PathVariable Long id, @RequestBody @Valid SchedulePatch schedulePatch) {
+        scheduleService.update(id, schedulePatch);
     }
 
     @DeleteMapping("/{id}")

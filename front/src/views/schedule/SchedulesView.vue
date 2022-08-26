@@ -32,9 +32,8 @@
           size="small"
           status-icon
       >
-        <!-- 입력 창에서 해당 과목의 수강생 목록과 선생님 목록을 조회해서 선택할 수 있도록 해야한다.-->
         <el-form-item label="수강생" prop="studentId">
-          <el-select v-model="scheduleForm.studentId" placeholder="수강생" @click="getStudentsApi">
+          <el-select v-model="scheduleForm.studentId" placeholder="수강생" @click="getStudentsApi" :disabled="!scheduleFormState">
             <el-option
                 v-for="student in courseStudents"
                 :key="student.id"
@@ -87,11 +86,18 @@
             </el-form-item>
           </el-col>
         </el-form-item>
+        <el-form-item label="진행상태" v-if="!scheduleFormState">
+          <el-radio-group v-model="scheduleForm.scheduleState">
+            <el-radio v-for="state in STATE" :label="state.value">
+              {{state.label}}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
         <el-button @click="apiCall">{{`${scheduleFormState ? '등록' : '수정'}`}}</el-button>
-        <el-button id="dialogCloseButton" type="primary" @click="dialogFormVisible = false">Confirm</el-button>
+        <el-button @click="deleteApi" v-if="!scheduleFormState">취소</el-button>
       </span>
       </template>
     </el-dialog>
@@ -118,10 +124,12 @@ const weekText = ref(`${searchForm.value.appointmentTime.getMonth() + 1}월 ${ge
 const dialogFormVisible = ref(false);
 const scheduleFormState = ref(false);   // true : 등록, false : 변경
 const scheduleForm = reactive({
+  scheduleId: '',
   studentId: '',
   teacherId: '',
   start: '',
   end: '',
+  scheduleState: ''
 })
 const courseStudents = ref([]);
 const courseTeachers = ref([]);
@@ -162,16 +170,10 @@ const createMainCalendar = () => {
   mainCalendar = new Calendar('#mainCalendar', options);
 };
 
-const getDateStr = (date) => {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return year + (month < 10 ? '-0' : "-") + month + (day < 10 ? '-0' : "-") + day;
-}
-
 const getCourseList = (course) => {
   searchForm.value.course = course;
   searchForm.value.appointmentTime = new Date();
+  scheduleForm.scheduleId = '';
   scheduleForm.studentId = '';
   scheduleForm.teacherId = '';
   scheduleForm.start = '';
@@ -201,7 +203,6 @@ const getListApi = () => {
         params:
             {
               course: searchForm.value.course,
-              // appointmentTime: getDateStr(searchForm.value.appointmentTime)
               appointmentTime: localDateTimeFormatter(searchForm.value.appointmentTime)
       }})
       .then(res => {
@@ -272,8 +273,25 @@ const postApi = () => {
 }
 
 const patchApi = () => {
-  alert("patch!");
-  // todo - 수정요청 처리
+  axios.patch(`/api/schedules/${scheduleForm.scheduleId}`, {
+    teacherId: scheduleForm.teacherId,
+    start: localDateTimeFormatter(scheduleForm.start),
+    end: localDateTimeFormatter(scheduleForm.end),
+    scheduleState: scheduleForm.scheduleState
+  })
+      .then(res => {
+        alert("스케줄이 변경되었습니다.");
+        router.go(0);
+      })
+      .catch(err => {
+        const result = err.response.data;
+        alert(result.message);
+      });
+}
+
+const deleteApi = () => {
+  // TODO - 삭제
+  // 스케쥴 드래그로 수정기능 가능하다면 기능 구현
 }
 
 const apiCall = () => {
@@ -288,13 +306,18 @@ onMounted(() => {
     getTeachersApi();
     const schedule = event.event.body;
 
+    scheduleForm.scheduleId = schedule.id;
     scheduleForm.studentId = schedule.studentId;
     scheduleForm.teacherId = schedule.teacherId;
     scheduleForm.start = event.event.start;
     scheduleForm.end = event.event.end;
+    scheduleForm.scheduleState = STATE[schedule.state].value;
     scheduleFormState.value = false;
     dialogFormVisible.value = true;
   }).on('selectDateTime', (select) => {
+    scheduleForm.scheduleId = '';
+    scheduleForm.studentId = '';
+    scheduleForm.teacherId = '';
     scheduleForm.start = select.start;
     scheduleForm.end = select.end;
     scheduleFormState.value = true;
