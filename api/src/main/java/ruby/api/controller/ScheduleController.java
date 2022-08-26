@@ -21,7 +21,6 @@ public class ScheduleController {
 
     @PostMapping
     public ScheduleResponse post(@RequestBody @Valid SchedulePost schedulePost) {
-        // todo - 등록 테스트 필요
         Schedule schedule = scheduleService.add(schedulePost);
         return new ScheduleResponse(schedule);
     }

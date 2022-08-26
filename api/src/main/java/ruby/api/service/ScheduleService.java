@@ -3,6 +3,7 @@ package ruby.api.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ruby.api.exception.schedule.CourseDiscordException;
 import ruby.api.exception.schedule.ScheduleNotFoundException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
@@ -34,6 +35,8 @@ public class ScheduleService {
                 .orElseThrow(StudentNotFoundException::new);
         Teacher teacher = teacherRepository.findById(schedulePost.getTeacherId())
                 .orElseThrow(TeacherNotFoundException::new);
+
+        if (!student.getCourse().equals(teacher.getCourse())) throw new CourseDiscordException();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime start = LocalDateTime.parse(schedulePost.getStart(), formatter);
