@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@WithMockUser(username = "test", roles = "MANAGER")
 class ScheduleGetListTest {
 
     @Autowired
@@ -114,7 +115,6 @@ class ScheduleGetListTest {
 
     @Test
     @DisplayName("잘못된 날짜 형식으로 스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
     void getList_wrongAppointmentTime() throws Exception {
         mockMvc.perform(get("/schedules")
                         .param("course", Course.VIOLIN.name())
@@ -129,7 +129,6 @@ class ScheduleGetListTest {
 
     @Test
     @DisplayName("잘못된 과목으로 스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
     void getList_wrongCourse() throws Exception {
 
         String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
@@ -146,7 +145,6 @@ class ScheduleGetListTest {
 
     @Test
     @DisplayName("수강생이 없는 과목으로 스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
     void getList_noneCourse() throws Exception {
         // given
         String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());
@@ -167,7 +165,6 @@ class ScheduleGetListTest {
 
     @Test
     @DisplayName("스케쥴이 없는 기간으로 스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
     void getList_noneAppointmentTime() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue() + 3, LocalDateTime.now().getDayOfMonth(), 0, 0);
@@ -189,7 +186,6 @@ class ScheduleGetListTest {
 
     @Test
     @DisplayName("스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
     void getList() throws Exception {
         // given
         String appointmentTime = LocalDateTime.now().format(DateUtils.formatter());

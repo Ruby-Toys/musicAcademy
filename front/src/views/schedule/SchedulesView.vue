@@ -292,7 +292,8 @@ const patchApi = () => {
     scheduleState: scheduleForm.scheduleState
   })
       .then(res => {
-        alert("스케줄이 변경되었습니다.");
+        if (dialogFormVisible.value) alert("스케줄이 변경되었습니다.");
+
         // 변경된 스케쥴을 가져온다.
         const schedule = res.data;
         mainCalendar.updateEvent(
@@ -315,8 +316,23 @@ const patchApi = () => {
 }
 
 const deleteApi = () => {
-  // TODO - 삭제
-  // 스케쥴 드래그로 수정기능 가능하다면 기능 구현
+  if (!confirm("스케줄을 취소하시겠습니까?")) return;
+  axios.delete(`/api/schedules/${scheduleForm.scheduleId}`)
+      .then(res => {
+        alert("스케줄이 삭제되었습니다.");
+        mainCalendar.deleteEvent(scheduleForm.scheduleId, scheduleForm.calendarId);
+        scheduleForm.scheduleId = '';
+        scheduleForm.studentId = '';
+        scheduleForm.teacherId = '';
+        scheduleForm.start = '';
+        scheduleForm.end = '';
+        scheduleForm.scheduleState = '';
+        dialogFormVisible.value = false;
+      })
+      .catch(err => {
+        const result = err.response.data;
+        alert(result.message);
+      });
 }
 
 const apiCall = () => {
@@ -326,28 +342,42 @@ const apiCall = () => {
 
 onMounted(() => {
   createMainCalendar();
-  mainCalendar.on('clickEvent', event => {
-    getStudentsApi();
-    getTeachersApi();
-    const schedule = event.event.body;
+  mainCalendar
+      .on('clickEvent', event => {
+        getStudentsApi();
+        getTeachersApi();
+        const schedule = event.event.body;
 
-    scheduleForm.scheduleId = schedule.id;
-    scheduleForm.studentId = schedule.studentId;
-    scheduleForm.teacherId = schedule.teacherId;
-    scheduleForm.start = event.event.start;
-    scheduleForm.end = event.event.end;
-    scheduleForm.scheduleState = STATE[schedule.state].value;
-    scheduleFormState.value = false;
-    dialogFormVisible.value = true;
-  }).on('selectDateTime', (select) => {
-    scheduleForm.scheduleId = '';
-    scheduleForm.studentId = '';
-    scheduleForm.teacherId = '';
-    scheduleForm.start = select.start;
-    scheduleForm.end = select.end;
-    scheduleFormState.value = true;
-    dialogFormVisible.value = true;
-  });
+        scheduleForm.scheduleId = schedule.id;
+        scheduleForm.studentId = schedule.studentId;
+        scheduleForm.teacherId = schedule.teacherId;
+        scheduleForm.start = event.event.start;
+        scheduleForm.end = event.event.end;
+        scheduleForm.scheduleState = STATE[schedule.state].value;
+        scheduleFormState.value = false;
+        dialogFormVisible.value = true;
+      })
+      .on('selectDateTime', (select) => {
+        scheduleForm.scheduleId = '';
+        scheduleForm.studentId = '';
+        scheduleForm.teacherId = '';
+        scheduleForm.start = select.start;
+        scheduleForm.end = select.end;
+        scheduleFormState.value = true;
+        dialogFormVisible.value = true;
+      })
+      .on('beforeUpdateEvent', ({event, changes}) => {
+        console.log(changes.start);
+        console.log(changes.end);
+
+        scheduleForm.scheduleId = event.id;
+        scheduleForm.studentId = event.body.studentId;
+        scheduleForm.teacherId = event.body.teacherId;
+        scheduleForm.start = changes.start? changes.start : event.start;
+        scheduleForm.end = changes.end;
+        scheduleForm.scheduleState = event.body.state;
+        patchApi();
+      })
 
   getListApi();
 });
