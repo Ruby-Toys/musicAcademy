@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ruby.api.exception.BusinessException;
 import ruby.api.response.ErrorResponse;
 
+import java.time.format.DateTimeParseException;
+
 @RestControllerAdvice
 public class ExceptionController {
 
@@ -29,8 +31,8 @@ public class ExceptionController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(InvalidFormatException.class)
-    public ErrorResponse invalidFormatExceptionHandler(InvalidFormatException e) {
+    @ExceptionHandler({InvalidFormatException.class, IllegalArgumentException.class})
+    public ErrorResponse invalidFormatExceptionHandler(Exception e) {
         return ErrorResponse.builder()
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message(BIND_EXCEPTION_MESSAGE)

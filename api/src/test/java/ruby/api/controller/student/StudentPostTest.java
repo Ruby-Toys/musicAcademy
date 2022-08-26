@@ -13,9 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.request.student.StudentPost;
-import ruby.api.valid.EmailPattern;
-import ruby.api.valid.NamePattern;
-import ruby.api.valid.PhonePattern;
+import ruby.api.valid.*;
 import ruby.core.domain.Student;
 import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.Grade;
@@ -53,6 +51,8 @@ public class StudentPostTest {
         // given
         StudentPost student = StudentPost.builder()
                 .name("!@#")
+                .course("QWE")
+                .grade("QWEQWE")
                 .email("testnaver.com")
                 .phoneNumber("01023233423123")
                 .memo("고급 단계로 변경")
@@ -69,6 +69,8 @@ public class StudentPostTest {
                 .andExpect(jsonPath("$.validation.phoneNumber").value(PhonePattern.MESSAGE))
                 .andExpect(jsonPath("$.validation.name").value(NamePattern.MESSAGE))
                 .andExpect(jsonPath("$.validation.email").value(EmailPattern.MESSAGE))
+                .andExpect(jsonPath("$.validation.course").value(CoursePattern.MESSAGE))
+                .andExpect(jsonPath("$.validation.grade").value(GradePattern.MESSAGE))
                 .andDo(print());
     }
 
@@ -80,8 +82,8 @@ public class StudentPostTest {
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
-                .course(Course.FLUTE)
-                .grade(Grade.BEGINNER)
+                .course(Course.FLUTE.name())
+                .grade(Grade.BEGINNER.name())
                 .memo("수강생 신규 등록")
                 .build();
 
@@ -98,8 +100,8 @@ public class StudentPostTest {
         assertThat(student.getName()).isEqualTo(addStudent.getName());
         assertThat(student.getEmail()).isEqualTo(addStudent.getEmail());
         assertThat(student.getPhoneNumber()).isEqualTo(addStudent.getPhoneNumber());
-        assertThat(student.getCourse()).isEqualTo(addStudent.getCourse());
-        assertThat(student.getGrade()).isEqualTo(addStudent.getGrade());
+        assertThat(student.getCourse()).isEqualTo(addStudent.getCourse().name());
+        assertThat(student.getGrade()).isEqualTo(addStudent.getGrade().name());
         assertThat(student.getMemo()).isEqualTo(addStudent.getMemo());
     }
 }

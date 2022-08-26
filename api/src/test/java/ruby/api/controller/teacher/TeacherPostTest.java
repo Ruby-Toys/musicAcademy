@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.request.teacher.TeacherPost;
+import ruby.api.valid.CoursePattern;
 import ruby.api.valid.EmailPattern;
 import ruby.api.valid.NamePattern;
 import ruby.api.valid.PhonePattern;
@@ -53,6 +54,7 @@ public class TeacherPostTest {
                 .name("!@#")
                 .email("testnaver.com")
                 .phoneNumber("01023233423123")
+                .course("DRRR")
                 .build();
 
         // when
@@ -66,18 +68,19 @@ public class TeacherPostTest {
                 .andExpect(jsonPath("$.validation.phoneNumber").value(PhonePattern.MESSAGE))
                 .andExpect(jsonPath("$.validation.name").value(NamePattern.MESSAGE))
                 .andExpect(jsonPath("$.validation.email").value(EmailPattern.MESSAGE))
+                .andExpect(jsonPath("$.validation.course").value(CoursePattern.MESSAGE))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("선생님 정보 수정")
+    @DisplayName("선생님 정보 등록")
     void postTeacher() throws Exception {
         // given
         TeacherPost teacher = TeacherPost.builder()
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
-                .course(Course.FLUTE)
+                .course(Course.FLUTE.name())
                 .build();
 
         // when
@@ -93,6 +96,6 @@ public class TeacherPostTest {
         assertThat(teacher.getName()).isEqualTo(addTeacher.getName());
         assertThat(teacher.getEmail()).isEqualTo(addTeacher.getEmail());
         assertThat(teacher.getPhoneNumber()).isEqualTo(addTeacher.getPhoneNumber());
-        assertThat(teacher.getCourse()).isEqualTo(addTeacher.getCourse());
+        assertThat(teacher.getCourse()).isEqualTo(addTeacher.getCourse().name());
     }
 }

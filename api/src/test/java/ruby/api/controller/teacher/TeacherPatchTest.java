@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.request.teacher.TeacherPatch;
+import ruby.api.valid.CoursePattern;
 import ruby.api.valid.EmailPattern;
 import ruby.api.valid.NamePattern;
 import ruby.api.valid.PhonePattern;
@@ -63,6 +64,7 @@ public class TeacherPatchTest {
                 .name("!@#")
                 .email("testnaver.com")
                 .phoneNumber("01023233423123")
+                .course("DRUM")
                 .build();
 
         // when
@@ -76,6 +78,7 @@ public class TeacherPatchTest {
                 .andExpect(jsonPath("$.validation.phoneNumber").value(PhonePattern.MESSAGE))
                 .andExpect(jsonPath("$.validation.name").value(NamePattern.MESSAGE))
                 .andExpect(jsonPath("$.validation.email").value(EmailPattern.MESSAGE))
+                .andExpect(jsonPath("$.validation.course").value(CoursePattern.MESSAGE))
                 .andDo(print());
     }
 
@@ -88,7 +91,7 @@ public class TeacherPatchTest {
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
-                .course(Course.FLUTE)
+                .course(Course.FLUTE.name())
                 .build();
 
         // when
@@ -117,7 +120,7 @@ public class TeacherPatchTest {
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
-                .course(Course.FLUTE)
+                .course(Course.FLUTE.name())
                 .build();
 
         // when
@@ -134,6 +137,6 @@ public class TeacherPatchTest {
         assertThat(updatedTeacher.getName()).isEqualTo(teacherPatch.getName());
         assertThat(updatedTeacher.getEmail()).isEqualTo(teacherPatch.getEmail());
         assertThat(updatedTeacher.getPhoneNumber()).isEqualTo(teacherPatch.getPhoneNumber());
-        assertThat(updatedTeacher.getCourse()).isEqualTo(teacherPatch.getCourse());
+        assertThat(updatedTeacher.getCourse().name()).isEqualTo(teacherPatch.getCourse());
     }
 }

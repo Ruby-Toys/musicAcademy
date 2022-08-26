@@ -25,7 +25,7 @@ public class TeacherService {
                 .name(teacherPost.getName())
                 .phoneNumber(teacherPost.getPhoneNumber())
                 .email(teacherPost.getEmail())
-                .course(teacherPost.getCourse())
+                .course(Course.valueOf(teacherPost.getCourse()))
                 .build();
         teacherRepository.save(teacher);
     }
@@ -47,7 +47,7 @@ public class TeacherService {
         teacher.setName(teacherPatch.getName());
         teacher.setEmail(teacherPatch.getEmail());
         teacher.setPhoneNumber(teacherPatch.getPhoneNumber());
-        teacher.setCourse(teacherPatch.getCourse());
+        teacher.setCourse(Course.valueOf(teacherPatch.getCourse()));
     }
 
     public void delete(Long id) {

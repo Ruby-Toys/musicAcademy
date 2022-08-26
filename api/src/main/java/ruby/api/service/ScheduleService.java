@@ -9,9 +9,11 @@ import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.request.schedule.ScheduleSearch;
+import ruby.api.utils.LocalDateTimeFormatter;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
+import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.ScheduleState;
 import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
@@ -38,7 +40,7 @@ public class ScheduleService {
 
         if (!student.getCourse().equals(teacher.getCourse())) throw new CourseDiscordException();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
         LocalDateTime start = LocalDateTime.parse(schedulePost.getStart(), formatter);
         LocalDateTime end = LocalDateTime.parse(schedulePost.getEnd(), formatter);
 
@@ -54,10 +56,10 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<Schedule> getList(ScheduleSearch search) {
-        LocalDateTime appointmentTime = LocalDateTime.parse(search.getAppointmentTime() + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        LocalDateTime appointmentTime = LocalDateTime.parse(search.getAppointmentTime(), LocalDateTimeFormatter.formatter());
 
         // 스케쥴은 시작날짜와 끝날짜를 입력받아 검색한다.
-        return scheduleRepository.findByCourseAndWeek(search.getCourse(), appointmentTime);
+        return scheduleRepository.findByCourseAndWeek(Course.valueOf(search.getCourse()), appointmentTime);
     }
 
     public List<Schedule> getListByStudent(Long id) {

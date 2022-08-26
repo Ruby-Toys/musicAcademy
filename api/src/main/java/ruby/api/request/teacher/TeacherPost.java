@@ -3,6 +3,7 @@ package ruby.api.request.teacher;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ruby.api.valid.CoursePattern;
 import ruby.api.valid.EmailPattern;
 import ruby.api.valid.NamePattern;
 import ruby.api.valid.PhonePattern;
@@ -18,5 +19,6 @@ public class TeacherPost {
     private String email;
     @PhonePattern
     private String phoneNumber;
-    private Course course;
+    @CoursePattern
+    private String course;
 }

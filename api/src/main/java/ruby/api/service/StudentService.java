@@ -12,6 +12,7 @@ import ruby.api.request.student.StudentPatch;
 import ruby.api.request.student.StudentSearch;
 import ruby.core.domain.Student;
 import ruby.core.domain.enums.Course;
+import ruby.core.domain.enums.Grade;
 import ruby.core.repository.StudentRepository;
 
 import java.util.List;
@@ -30,8 +31,8 @@ public class StudentService {
                 .name(studentPost.getName())
                 .phoneNumber(studentPost.getPhoneNumber())
                 .email(studentPost.getEmail())
-                .course(studentPost.getCourse())
-                .grade(studentPost.getGrade())
+                .course(Course.valueOf(studentPost.getCourse()))
+                .grade(Grade.valueOf(studentPost.getGrade()))
                 .memo(studentPost.getMemo())
                 .build();
         studentRepository.save(student);
@@ -54,8 +55,8 @@ public class StudentService {
         student.setName(studentPatch.getName());
         student.setEmail(studentPatch.getEmail());
         student.setPhoneNumber(studentPatch.getPhoneNumber());
-        student.setCourse(studentPatch.getCourse());
-        student.setGrade(studentPatch.getGrade());
+        student.setCourse(Course.valueOf(studentPatch.getCourse()));
+        student.setGrade(Grade.valueOf(studentPatch.getGrade()));
         student.setMemo(studentPatch.getMemo());
     }
 

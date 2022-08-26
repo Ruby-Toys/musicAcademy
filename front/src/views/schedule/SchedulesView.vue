@@ -201,7 +201,8 @@ const getListApi = () => {
         params:
             {
               course: searchForm.value.course,
-              appointmentTime: getDateStr(searchForm.value.appointmentTime)
+              // appointmentTime: getDateStr(searchForm.value.appointmentTime)
+              appointmentTime: localDateTimeFormatter(searchForm.value.appointmentTime)
       }})
       .then(res => {
         schedules.value = [];

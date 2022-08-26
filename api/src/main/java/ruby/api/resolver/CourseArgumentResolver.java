@@ -23,7 +23,6 @@ public class CourseArgumentResolver implements HandlerMethodArgumentResolver {
      */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        // UserAccount 타입의 파라미터가 있는지 확인
         return Course.class.equals(parameter.getParameterType());
     }
 

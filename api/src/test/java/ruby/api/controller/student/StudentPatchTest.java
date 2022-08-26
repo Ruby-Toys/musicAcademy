@@ -65,6 +65,8 @@ public class StudentPatchTest {
         StudentPatch studentPatch = StudentPatch.builder()
                 .name("!@#")
                 .email("testnaver.com")
+                .course(Course.VIOLA.name())
+                .grade("QWER")
                 .phoneNumber("01023233423123")
                 .memo("고급 단계로 변경")
                 .build();
@@ -92,8 +94,8 @@ public class StudentPatchTest {
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
-                .course(Course.FLUTE)
-                .grade(Grade.ADVANCED)
+                .course(Course.FLUTE.name())
+                .grade(Grade.ADVANCED.name())
                 .memo("고급 단계로 변경")
                 .build();
 
@@ -125,8 +127,8 @@ public class StudentPatchTest {
                 .name("test")
                 .email("test@naver.com")
                 .phoneNumber("01023233423")
-                .course(Course.FLUTE)
-                .grade(Grade.ADVANCED)
+                .course(Course.FLUTE.name())
+                .grade(Grade.ADVANCED.name())
                 .memo("고급 단계로 변경")
                 .build();
 
@@ -144,8 +146,8 @@ public class StudentPatchTest {
         assertThat(updatedStudent.getName()).isEqualTo(studentPatch.getName());
         assertThat(updatedStudent.getEmail()).isEqualTo(studentPatch.getEmail());
         assertThat(updatedStudent.getPhoneNumber()).isEqualTo(studentPatch.getPhoneNumber());
-        assertThat(updatedStudent.getCourse()).isEqualTo(studentPatch.getCourse());
-        assertThat(updatedStudent.getGrade()).isEqualTo(studentPatch.getGrade());
+        assertThat(updatedStudent.getCourse().name()).isEqualTo(studentPatch.getCourse());
+        assertThat(updatedStudent.getGrade().name()).isEqualTo(studentPatch.getGrade());
         assertThat(updatedStudent.getMemo()).isEqualTo(studentPatch.getMemo());
     }
 }

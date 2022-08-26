@@ -1,4 +1,4 @@
-package ruby.api.controller.schedule;
+package ruby.api.controller.student;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,12 +11,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
-import ruby.api.request.schedule.ScheduleSearch;
 import ruby.api.service.ScheduleService;
-import ruby.api.utils.LocalDateTimeFormatter;
-import ruby.api.valid.CoursePattern;
-import ruby.api.valid.DatePattern;
-import ruby.api.valid.LocalDateTimePattern;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.Student;
 import ruby.core.domain.Teacher;
@@ -29,7 +24,6 @@ import ruby.core.repository.TeacherRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class ScheduleGetListTest {
+class StudentSchedulesByCourseTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -115,101 +109,28 @@ class ScheduleGetListTest {
     }
 
     @Test
-    @DisplayName("잘못된 날짜 형식으로 스케쥴 조회")
+    @DisplayName("잘못된 수강과목으로 수강생의 스케쥴 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
-    void getList_wrongAppointmentTime() throws Exception {
-        mockMvc.perform(get("/schedules")
-                        .param("course", Course.VIOLIN.name())
-                        .param("appointmentTime", "2022 08 30")
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(ExceptionController.BIND_EXCEPTION_MESSAGE))
-                .andExpect(jsonPath("$.validation.appointmentTime").value(LocalDateTimePattern.MESSAGE))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("잘못된 과목으로 스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
-    void getList_wrongCourse() throws Exception {
-
-        String appointmentTime = LocalDateTime.now().format(LocalDateTimeFormatter.formatter());
-        mockMvc.perform(get("/schedules")
-                        .param("course", "DRUM")
-                        .param("appointmentTime", appointmentTime)
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(ExceptionController.BIND_EXCEPTION_MESSAGE))
-                .andExpect(jsonPath("$.validation.course").value(CoursePattern.MESSAGE))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("수강생이 없는 과목으로 스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
-    void getList_noneCourse() throws Exception {
-        // given
-        String appointmentTime = LocalDateTime.now().format(LocalDateTimeFormatter.formatter());
-
-        ScheduleSearch search = ScheduleSearch.builder()
-                        .course(Course.VIOLIN.name())
-                        .appointmentTime(appointmentTime)
-                        .build();
-
-        mockMvc.perform(get("/schedules")
-                        .param("course", Course.FLUTE.name())
-                        .param("appointmentTime", search.getAppointmentTime())
-                )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents.length()").value(0))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("스케쥴이 없는 기간으로 스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
-    void getList_noneAppointmentTime() throws Exception {
-        // given
-        LocalDateTime now = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue() + 3, LocalDateTime.now().getDayOfMonth(), 0, 0);
-        String appointmentTime = now.format(LocalDateTimeFormatter.formatter());
-
-        ScheduleSearch search = ScheduleSearch.builder()
-                .course(Course.VIOLIN.name())
-                .appointmentTime(appointmentTime)
-                .build();
-
-        mockMvc.perform(get("/schedules")
-                        .param("course", search.getCourse())
-                        .param("appointmentTime", search.getAppointmentTime())
-                )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents.length()").value(0))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("스케쥴 조회")
-    @WithMockUser(username = "test", roles = "MANAGER")
-    void getList() throws Exception {
-        // given
-        String appointmentTime = LocalDateTime.now().format(LocalDateTimeFormatter.formatter());
-
-        ScheduleSearch search = ScheduleSearch.builder()
-                .course(Course.VIOLIN.name())
-                .appointmentTime(appointmentTime)
-                .build();
-
-        int resultCount = scheduleService.getList(search).size();
-
+    void schedulesByCourse_wrongCourse() throws Exception {
         // when
-        mockMvc.perform(get("/schedules")
-                        .param("course", search.getCourse())
-                        .param("appointmentTime", search.getAppointmentTime())
+        mockMvc.perform(get("/students/course")
+                        .param("course", "DRUM")
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ExceptionController.BIND_EXCEPTION_MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("수강과목으로 수강생의 스케줄 조회")
+    @WithMockUser(username = "test", roles = "MANAGER")
+    void schedulesByCourse() throws Exception {
+        // when
+        mockMvc.perform(get("/students/course")
+                        .param("course", Course.VIOLIN.name())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents.length()").value(resultCount))
                 .andDo(print());
     }
 }

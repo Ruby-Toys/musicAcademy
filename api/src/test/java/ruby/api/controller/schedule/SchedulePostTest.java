@@ -13,8 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.exception.schedule.CourseDiscordException;
+import ruby.api.exception.student.StudentNotFoundException;
+import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePost;
 import ruby.api.request.student.StudentPost;
+import ruby.api.utils.LocalDateTimeFormatter;
 import ruby.api.valid.EmailPattern;
 import ruby.api.valid.LocalDateTimePattern;
 import ruby.api.valid.NamePattern;
@@ -31,6 +34,7 @@ import ruby.core.repository.TeacherRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -94,7 +98,7 @@ public class SchedulePostTest {
                 .build();
         teacherRepository.save(teacher);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
@@ -122,8 +126,8 @@ public class SchedulePostTest {
         SchedulePost schedulePost = SchedulePost.builder()
                 .start("2022-13-10 25:11:00")
                 .end("2022-13-10 25:11:00")
-                .studentId(student.getId() + 999)
-                .teacherId(teacher.getId() + 999)
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
                 .build();
 
         // when
@@ -140,13 +144,63 @@ public class SchedulePostTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 수강생으로 스케줄 등록")
+    void postSchedule_noneStudent() throws Exception {
+        // given
+        Teacher teacher = teacherRepository.findAll().get(0);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        SchedulePost schedulePost = SchedulePost.builder()
+                .start(now.format(formatter))
+                .end(now.plusHours(1).format(formatter))
+                .studentId(9990L)
+                .teacherId(teacher.getId())
+                .build();
+
+        // when
+        mockMvc.perform(post("/schedules")
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePost))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(StudentNotFoundException.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 선생님으로 스케줄 등록")
+    void postSchedule_noneTeacher() throws Exception {
+        // given
+        Student student = studentRepository.findAll().get(0);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
+        SchedulePost schedulePost = SchedulePost.builder()
+                .start(now.format(formatter))
+                .end(now.plusHours(1).format(formatter))
+                .studentId(student.getId())
+                .teacherId(999L)
+                .build();
+
+        // when
+        mockMvc.perform(post("/schedules")
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePost))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(TeacherNotFoundException.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("스케줄 등록")
     void postSchedule() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = LocalDateTimeFormatter.formatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
                 .end(now.plusHours(1).format(formatter))
