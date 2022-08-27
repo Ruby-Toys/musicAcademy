@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ruby.api.exception.PeriodException;
+import ruby.api.request.payment.PaymentPost;
 import ruby.api.request.payment.PaymentSearch;
 import ruby.api.response.payment.PaymentsResponse;
 import ruby.api.service.PaymentService;
@@ -19,6 +20,11 @@ import java.util.List;
 public class PaymentController {
 
     private final PaymentService paymentService;
+
+    @PostMapping
+    public void post(@RequestBody PaymentPost paymentPost) {
+        paymentService.add(paymentPost);
+    }
 
     @GetMapping
     public PaymentsResponse getList(@Valid PaymentSearch search) {

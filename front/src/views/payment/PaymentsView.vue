@@ -83,7 +83,7 @@ const deleteApi = (paymentId) => {
 
 
 const paymentFormatter = (payment) => {
-  return payment.amount.toLocaleString('en');
+  return payment.amount.toLocaleString();
 }
 
 onMounted(() => {

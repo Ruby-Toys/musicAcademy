@@ -6,11 +6,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ruby.api.exception.student.StudentNotFoundException;
+import ruby.api.request.payment.PaymentPost;
 import ruby.api.request.payment.PaymentSearch;
 import ruby.api.request.student.StudentSearch;
 import ruby.api.utils.DateUtils;
 import ruby.core.domain.Payment;
+import ruby.core.domain.Student;
 import ruby.core.repository.PaymentRepository;
+import ruby.core.repository.StudentRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +28,18 @@ import static java.lang.Math.max;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final StudentRepository studentRepository;
+
+    public void add(PaymentPost paymentPost) {
+        Student student = studentRepository.findById(paymentPost.getStudentId())
+                .orElseThrow(StudentNotFoundException::new);
+
+        Payment payment = Payment.builder()
+                .student(student)
+                .amount(paymentPost.getAmount())
+                .build();
+        paymentRepository.save(payment);
+    }
 
     public Page<Payment> getList(PaymentSearch search) {
         Pageable pageable = PageRequest.of(max(0, search.getPage() - 1), PaymentSearch.PAGE_SIZE);
@@ -33,4 +49,6 @@ public class PaymentService {
     public void delete(long id) {
         paymentRepository.deleteById(id);
     }
+
+
 }

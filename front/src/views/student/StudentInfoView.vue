@@ -44,7 +44,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="patchApi">수정</el-button>
-        <el-button type="success" @click="movePaymentProcess">결제하기</el-button>
+        <el-button type="success" @click="openPaymentPopup">결제하기</el-button>
         <el-button type="danger" @click="deleteApi">삭제</el-button>
       </el-form-item>
     </el-form>
@@ -59,6 +59,31 @@
         {{`담당 선생님: ${schedule.teacherName}`}}
       </el-timeline-item>
     </el-timeline>
+
+
+
+
+    <!-- dialog -->
+    <el-dialog v-model="dialogFormVisible" title="결제" width="600px">
+      <el-form
+          :model="student"
+          label-width="120px"
+          size="small"
+          status-icon
+      >
+        <el-form-item label="수강생">
+          {{student.name}}
+        </el-form-item>
+        <el-form-item label="결제금액">
+          <el-input v-model="amount" type="number"/>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button type="success" @click="postPaymentApi">결제</el-button>
+      </span>
+      </template>
+    </el-dialog>
   </el-container>
 
 
@@ -66,7 +91,7 @@
 
 <script setup lang="ts">
 import {useStudentStore} from "@/store/studentStore";
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {COURSE} from "/src/ts/course";
 import {GRADE} from "/src/ts/grade";
 import axios from "axios";
@@ -76,6 +101,13 @@ import {nameRule, phoneNumberRule, emailRule, courseRule, gradeRule } from "/src
 const schedules = ref([]);
 const studentStore = useStudentStore();
 const student = ref({...studentStore.getStudent})
+const dialogFormVisible = ref(false);
+const amount = ref(GRADE[student.value.grade].amount);
+
+const openPaymentPopup = () => {
+  amount.value = GRADE[student.value.grade].amount;
+  dialogFormVisible.value = true;
+}
 
 const patchApi = () => {
   axios.patch(`/api/students/${student.value.id}`, student.value)
@@ -104,9 +136,24 @@ const deleteApi = () => {
   }
 }
 
-const movePaymentProcess = () => {
-  // 결제할 수강생 정보는 store 에 저장되어 있는 정보를 그대로 사용
-  router.push({ name: "paymentProcess"});
+const postPaymentApi = () => {
+
+  if (confirm("결제를 진행하시겠습니까?")) {
+    alert(student.value.id + " / " + amount.value);
+    axios.post("/api/payments", {
+          studentId: student.value.id,
+          amount: amount.value
+        })
+        .then(res => {
+          alert("결제가 완료되었습니다.");
+          dialogFormVisible.value = false;
+        })
+        .catch((err) => {
+          const result = err.response.data;
+          console.log(result);
+          alert(result.message);
+        });
+  }
 }
 
 onMounted(() => {
