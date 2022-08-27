@@ -1,6 +1,7 @@
 package ruby.api.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +25,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .mvcMatchers("/docs/index.html");   // doc 문서를 제공하기 위해 해당 페이지는 허용
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+//                .mvcMatchers("/docs/index.html");   // doc 문서를 제공하기 위해 해당 페이지는 허용
     }
 
     /**
@@ -45,6 +47,7 @@ public class SecurityConfig {
                 .antMatchers("/teachers/**").hasRole("MANAGER")
                 .antMatchers("/schedules/**").hasRole("MANAGER")
                 .antMatchers("/payments/**").hasRole("MANAGER")
+                .antMatchers("/mail/**").hasRole("MANAGER")
                 .anyRequest().authenticated();
 
 

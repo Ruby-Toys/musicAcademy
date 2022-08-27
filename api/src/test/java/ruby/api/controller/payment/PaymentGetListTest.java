@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
 import ruby.api.request.payment.PaymentSearch;
-import ruby.api.utils.DateUtils;
 import ruby.core.domain.Payment;
 import ruby.core.domain.Student;
 import ruby.core.domain.enums.Course;
@@ -20,9 +19,7 @@ import ruby.core.domain.enums.Grade;
 import ruby.core.repository.PaymentRepository;
 import ruby.core.repository.StudentRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;

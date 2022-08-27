@@ -71,11 +71,11 @@ public class DataInit implements CommandLineRunner {
         boolean notExists = studentRepository.count() == 0;
 
         if (notExists) {
-            List<Student> students = IntStream.range(0, 10)
+            List<Student> students = IntStream.range(0, 2)
                     .mapToObj(idx -> Student.builder()
                             .name("student" + ++idx)
                             .course(idx % 2 == 0 ? Course.VIOLIN : Course.PIANO)
-                            .email("student" + idx + "@naver.com")
+                            .email(idx % 2 == 0 ? "rubykim0723@gmail.com" : "hiper8700@gmail.com")
                             .grade(idx % 2 == 0 ? Grade.BEGINNER : Grade.INTERMEDIATE)
                             .phoneNumber("01011112222")
                             .memo("악기 연주에 소질이 있음")
@@ -90,7 +90,7 @@ public class DataInit implements CommandLineRunner {
         boolean notExists = teacherRepository.count() == 0;
 
         if (notExists) {
-            List<Teacher> teachers = IntStream.range(0, 10)
+            List<Teacher> teachers = IntStream.range(0, 2)
                     .mapToObj(idx -> Teacher.builder()
                             .name("teacher" + ++idx)
                             .course(idx % 2 == 0 ? Course.VIOLIN : Course.PIANO)
@@ -113,12 +113,13 @@ public class DataInit implements CommandLineRunner {
                     List<Schedule> schedules = IntStream.range(0, 4)
                             .mapToObj(idx -> {
                                 LocalDateTime start = LocalDateTime.of(now.getYear(), now.getMonth(),
-                                        (idx + 1) * 6,  10 + idx, 0);
-
+                                        (now.getDayOfMonth() - 1 + (idx * 7)) % 31 + 1,
+                                        10 + idx + index, idx % 2 == 0 ? 30 : 0);
+                                start = start.plusDays(1);
                                 return Schedule.builder()
                                         .start(start)
                                         .end(start.plusHours(1))
-                                        .state(idx < 2 ? ScheduleState.COMPLETED : ScheduleState.NOT_STARTED)
+                                        .state(ScheduleState.NOT_STARTED)
                                         .student(students.get(index))
                                         .teacher(teachers.get(index))
                                         .build();

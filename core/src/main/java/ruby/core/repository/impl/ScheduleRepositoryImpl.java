@@ -71,6 +71,18 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         return fetchFirst != null;
     }
 
+    @Override
+    public List<Schedule> findByTomorrow() {
+        LocalDateTime start = LocalDate.now().plusDays(1).atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+
+        return queryFactory.selectFrom(schedule)
+                .leftJoin(schedule.student, student).fetchJoin()
+                .leftJoin(schedule.teacher, teacher).fetchJoin()
+                .where(schedule.start.after(start).and(schedule.start.before(end)))
+                .fetch();
+    }
+
 
     private Predicate weekCondition(LocalDateTime time) {
         DayOfWeek dayOfWeek = time.getDayOfWeek();
