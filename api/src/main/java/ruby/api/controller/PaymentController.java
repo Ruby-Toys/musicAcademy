@@ -2,9 +2,7 @@ package ruby.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ruby.api.exception.PeriodException;
 import ruby.api.request.payment.PaymentSearch;
 import ruby.api.response.payment.PaymentsResponse;
@@ -26,5 +24,10 @@ public class PaymentController {
     public PaymentsResponse getList(@Valid PaymentSearch search) {
         Page<Payment> payments = paymentService.getList(search);
         return new PaymentsResponse(payments);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable long id) {
+        paymentService.delete(id);
     }
 }

@@ -102,8 +102,6 @@ public class ScheduleService {
     }
 
     public void delete(Long id) {
-        Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(ScheduleNotFoundException::new);
-        scheduleRepository.delete(schedule);
+        scheduleRepository.deleteById(id);
     }
 }

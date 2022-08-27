@@ -61,8 +61,6 @@ public class StudentService {
     }
 
     public void delete(Long id) {
-        Student student = studentRepository.findById(id)
-                .orElseThrow(StudentNotFoundException::new);
-        studentRepository.delete(student);
+        studentRepository.deleteById(id);
     }
 }

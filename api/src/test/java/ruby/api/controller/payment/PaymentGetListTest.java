@@ -64,26 +64,22 @@ class PaymentGetListTest {
         studentRepository.saveAll(students);
 
         for (Student student : students) {
-            List<Payment> payments = IntStream.range(0, 5)
-                    .mapToObj(idx -> {
+            IntStream.range(0, 5)
+                    .forEach(idx -> {
                         Payment payment = Payment.builder()
                                 .student(student)
                                 .amount(student.getGrade().getAmount())
                                 .build();
+                        paymentRepository.save(payment);
                         payment.setCreateAt(LocalDateTime.now().minusMonths(idx));
-                        return payment;
-                    })
-                    .collect(Collectors.toList());
-            paymentRepository.saveAll(payments);
+                        paymentRepository.save(payment);
+                    });
         }
     }
 
     @Test
     @DisplayName("잘못된 형식의 페이지 번호로 결제 내역 조회")
     void getList_wrongPage() throws Exception {
-        // given
-        int totalCount = paymentRepository.findAll().size();
-
         // when
         mockMvc.perform(get("/payments")
                         .param("page", "asdasd")

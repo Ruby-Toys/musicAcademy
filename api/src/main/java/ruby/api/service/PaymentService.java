@@ -29,4 +29,8 @@ public class PaymentService {
         Pageable pageable = PageRequest.of(max(0, search.getPage() - 1), PaymentSearch.PAGE_SIZE);
         return paymentRepository.findByNameContains(search.getWord(), pageable);
     }
+
+    public void delete(long id) {
+        paymentRepository.deleteById(id);
+    }
 }

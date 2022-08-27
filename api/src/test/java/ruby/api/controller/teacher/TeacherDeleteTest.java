@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import ruby.api.controller.ExceptionController;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.core.domain.Teacher;
 import ruby.core.domain.enums.Course;
@@ -54,15 +55,10 @@ public class TeacherDeleteTest {
 
         // when
         mockMvc.perform(delete("/teachers/{id}", teacher.getId() + 999))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.message").value(TeacherNotFoundException.MESSAGE))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value(ExceptionController.NOT_FOUND_MESSAGE))
                 .andDo(print());
-
-        // then
-        Teacher findTeacher = teacherRepository.findById(teacher.getId()).orElse(null);
-        assertThat(findTeacher).isNotNull();
-        assertThat(findTeacher.getId()).isEqualTo(teacher.getId());
     }
 
     @Test
@@ -83,7 +79,6 @@ public class TeacherDeleteTest {
                 .andDo(print());
 
         // then
-        Teacher findTeacher = teacherRepository.findById(teacher.getId()).orElse(null);
-        assertThat(findTeacher).isNull();
+        assertThat(teacherRepository.existsById(teacher.getId())).isFalse();
     }
 }

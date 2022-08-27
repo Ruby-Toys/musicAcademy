@@ -8,11 +8,23 @@
         </template>
       </el-input>
     </div>
-    <el-table class="paymentsTable" :data="payments" >
+    <el-table class="paymentsTable" :data="payments">
       <el-table-column prop="paymentDate" label="결제일"/>
       <el-table-column prop="studentName" label="이름" />
       <el-table-column prop="phoneNumber" label="연락처" />
       <el-table-column prop="amount" label="결제금액" :formatter="paymentFormatter"/>
+      <el-table-column fixed="right" width="120">
+        <template #default="scope">
+          <el-button
+              link
+              type="primary"
+              size="small"
+              @click.prevent="deleteApi(scope.row.id)"
+          >
+            결제취소
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="pagination-block">
       <el-pagination layout="prev, pager, next" :total="totalCount" :page-size="pageSize" @current-change="getListApi"/>
@@ -33,6 +45,11 @@ const searchForm = ref({
 })
 const pageSize = ref(15);
 const totalCount = ref(0);
+const search = () => {
+  searchForm.value.word = word.value;
+  getListApi(1);
+}
+
 const getListApi = (page) => {
   searchForm.value.page = page;
   axios.get("/api/payments", {params: searchForm.value})
@@ -50,10 +67,20 @@ const getListApi = (page) => {
         alert(result.message);
       });
 }
-const search = () => {
-  searchForm.value.word = word.value;
-  getListApi(1);
+const deleteApi = (paymentId) => {
+  if (!confirm("해당 결제를 취소하시겠습니까?")) return;
+
+  axios.delete(`/api/payments/${paymentId}`)
+      .then(res => {
+        alert("결제가 취소되었습니다.")
+        getListApi(searchForm.value.page);
+      })
+      .catch(err => {
+        const result = err.response.data;
+        alert(result.message);
+      });
 }
+
 
 const paymentFormatter = (payment) => {
   return payment.amount.toLocaleString('en');
