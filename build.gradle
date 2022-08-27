@@ -65,7 +65,7 @@ project(":api") {
     dependencies {
         implementation project(':core')
         // web
-        api 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
         // validation
         implementation 'org.springframework.boot:spring-boot-starter-validation'
         // modelMapper
@@ -82,5 +82,8 @@ project(":api") {
 project(":batch") {
     dependencies {
         implementation project(':core')
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-batch'
+        testImplementation 'org.springframework.batch:spring-batch-test'
     }
 }
