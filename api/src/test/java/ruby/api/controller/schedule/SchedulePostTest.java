@@ -31,6 +31,7 @@ import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
 import ruby.core.repository.TeacherRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -96,7 +97,7 @@ public class SchedulePostTest {
                 .phoneNumber("01011112222")
                 .build();
         teacherRepository.save(teacher);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDate.now().atTime(20, 0);
         DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
@@ -147,7 +148,7 @@ public class SchedulePostTest {
     void postSchedule_noneStudent() throws Exception {
         // given
         Teacher teacher = teacherRepository.findAll().get(0);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDate.now().atTime(20, 0);
         DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
@@ -172,7 +173,7 @@ public class SchedulePostTest {
     void postSchedule_noneTeacher() throws Exception {
         // given
         Student student = studentRepository.findAll().get(0);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDate.now().atTime(20, 0);
         DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))
@@ -199,7 +200,7 @@ public class SchedulePostTest {
         // given
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDate.now().atTime(20, 0);
         DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.plusHours(1).format(formatter))
@@ -226,8 +227,8 @@ public class SchedulePostTest {
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
         DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime end = LocalDateTime.now().plusHours(1);
+        LocalDateTime start = LocalDate.now().atTime(20, 0);
+        LocalDateTime end = LocalDate.now().atTime(20, 0).plusHours(1);
         Schedule schedule = Schedule.builder()
                 .student(student)
                 .teacher(teacher)
@@ -262,8 +263,8 @@ public class SchedulePostTest {
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
         DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        LocalDateTime start = LocalDate.now().atTime(20, 0);
+        LocalDateTime end = LocalDate.now().atTime(20, 0).plusDays(1);
 
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(start.format(formatter))
@@ -289,7 +290,7 @@ public class SchedulePostTest {
         // given
         Student student = studentRepository.findAll().get(0);
         Teacher teacher = teacherRepository.findAll().get(0);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDate.now().atTime(20, 0);
         DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
         SchedulePost schedulePost = SchedulePost.builder()
                 .start(now.format(formatter))

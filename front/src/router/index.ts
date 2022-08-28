@@ -29,7 +29,7 @@ const router = createRouter({
           ...scheduleRoutes,
           ...studentRoutes,
           ...teacherRoutes,
-          ...paymentRoutes
+          ...paymentRoutes,
       ],
     },
   ],

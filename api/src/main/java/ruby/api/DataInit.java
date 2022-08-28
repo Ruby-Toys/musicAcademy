@@ -35,10 +35,10 @@ public class DataInit implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         initAccount();
-        initStudents();
-        initTeachers();
-        initSchedules();
-        initPayment();
+//        initStudents();
+//        initTeachers();
+//        initSchedules();
+//        initPayment();
     }
 
     public void initAccount() {
@@ -104,6 +104,8 @@ public class DataInit implements CommandLineRunner {
     }
 
     public void initSchedules() {
+        if (scheduleRepository.findAll().size() > 0) return;
+
         List<Student> students = studentRepository.findAll();
         List<Teacher> teachers = teacherRepository.findAll();
 
@@ -130,6 +132,8 @@ public class DataInit implements CommandLineRunner {
     }
 
     public void initPayment() {
+        if (paymentRepository.findAll().size() > 0) return;
+
         List<Student> students = studentRepository.findAll();
 
         for (Student student : students) {

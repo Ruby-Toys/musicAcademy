@@ -31,6 +31,7 @@ import ruby.core.repository.ScheduleRepository;
 import ruby.core.repository.StudentRepository;
 import ruby.core.repository.TeacherRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -84,7 +85,7 @@ public class SchedulePatchTest {
                 .phoneNumber("01011112222")
                 .build();
         teacherRepository.save(teacher);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDate.now().atTime(20, 0);
         List<Schedule> schedules = IntStream.range(0, 4)
                 .mapToObj(idx -> {
                     LocalDateTime start = LocalDateTime.of(
@@ -136,8 +137,8 @@ public class SchedulePatchTest {
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId() + 999)
-                .start(LocalDateTime.now().format(formatter))
-                .end(LocalDateTime.now().plusHours(1).format(formatter))
+                .start(LocalDate.now().atTime(20, 0).format(formatter))
+                .end(LocalDate.now().atTime(20, 0).plusHours(1).format(formatter))
                 .scheduleState(ScheduleState.COMPLETED.name())
                 .build();
 
@@ -170,8 +171,8 @@ public class SchedulePatchTest {
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId() + 999)
                 .teacherId(teacher.getId())
-                .start(LocalDateTime.now().format(formatter))
-                .end(LocalDateTime.now().plusHours(1).format(formatter))
+                .start(LocalDate.now().atTime(20, 0).format(formatter))
+                .end(LocalDate.now().atTime(20, 0).plusHours(1).format(formatter))
                 .scheduleState(ScheduleState.COMPLETED.name())
                 .build();
 
@@ -204,13 +205,13 @@ public class SchedulePatchTest {
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId())
-                .start(LocalDateTime.now().format(formatter))
-                .end(LocalDateTime.now().plusHours(1).format(formatter))
+                .start(LocalDate.now().atTime(20, 0).format(formatter))
+                .end(LocalDate.now().atTime(20, 0).plusHours(1).format(formatter))
                 .scheduleState(ScheduleState.COMPLETED.name())
                 .build();
 
         // when
-        mockMvc.perform(patch("/schedules/{id}", schedule.getId() + 999)
+        mockMvc.perform(patch("/schedules/{id}", schedule.getId() + 9999999)
                         .contentType(APPLICATION_JSON)
                         .content(mapper.writeValueAsString(schedulePatch))
                 )
@@ -274,8 +275,8 @@ public class SchedulePatchTest {
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId())
-                .start(LocalDateTime.now().plusHours(1).format(formatter))
-                .end(LocalDateTime.now().format(formatter))
+                .start(LocalDate.now().atTime(20, 0).plusHours(1).format(formatter))
+                .end(LocalDate.now().atTime(20, 0).format(formatter))
                 .scheduleState(ScheduleState.COMPLETED.name())
                 .build();
 
@@ -309,8 +310,8 @@ public class SchedulePatchTest {
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId())
-                .start(LocalDateTime.now().format(formatter))
-                .end(LocalDateTime.now().plusDays(1).format(formatter))
+                .start(LocalDate.now().atTime(20, 0).format(formatter))
+                .end(LocalDate.now().atTime(20, 0).plusDays(1).format(formatter))
                 .scheduleState(ScheduleState.COMPLETED.name())
                 .build();
 
@@ -344,8 +345,8 @@ public class SchedulePatchTest {
         SchedulePatch schedulePatch = SchedulePatch.builder()
                 .studentId(student.getId())
                 .teacherId(teacher.getId())
-                .start(LocalDateTime.now().format(formatter))
-                .end(LocalDateTime.now().plusHours(1).format(formatter))
+                .start(LocalDate.now().atTime(20, 0).format(formatter))
+                .end(LocalDate.now().atTime(20, 0).plusHours(1).format(formatter))
                 .scheduleState(ScheduleState.COMPLETED.name())
                 .build();
 

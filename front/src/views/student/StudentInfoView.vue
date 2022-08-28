@@ -139,7 +139,6 @@ const deleteApi = () => {
 const postPaymentApi = () => {
 
   if (confirm("결제를 진행하시겠습니까?")) {
-    alert(student.value.id + " / " + amount.value);
     axios.post("/api/payments", {
           studentId: student.value.id,
           amount: amount.value
