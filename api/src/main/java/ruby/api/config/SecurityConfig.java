@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .antMatchers("/teachers/**").hasRole("MANAGER")
                 .antMatchers("/schedules/**").hasRole("MANAGER")
                 .antMatchers("/payments/**").hasRole("MANAGER")
-                .antMatchers("/mail/**").hasRole("MANAGER")
+                .antMatchers("/batch/**").permitAll()
                 .anyRequest().authenticated();
 
 

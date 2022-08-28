@@ -1,12 +1,10 @@
 package ruby.core.repository.impl;
 
 import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import ruby.core.domain.Schedule;
 import ruby.core.domain.enums.Course;
-import ruby.core.domain.enums.ScheduleState;
 import ruby.core.repository.custom.ScheduleRepositoryCustom;
 
 import java.time.DayOfWeek;

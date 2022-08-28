@@ -76,6 +76,10 @@ public class ScheduleService {
         return scheduleRepository.findByTeacher(id);
     }
 
+    public List<Schedule> getListByTomorrow() {
+        return scheduleRepository.findByTomorrow();
+    }
+
     public Schedule update(Long id, SchedulePatch schedulePatch) {
         Schedule schedule = scheduleRepository.findByIdWithStudent(id)
                 .orElseThrow(ScheduleNotFoundException::new);
