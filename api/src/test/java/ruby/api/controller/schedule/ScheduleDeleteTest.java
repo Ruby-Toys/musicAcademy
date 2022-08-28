@@ -97,9 +97,9 @@ class ScheduleDeleteTest {
 
         // when
         mockMvc.perform(delete("/schedules/{id}", schedule.getId() + 999))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
-                .andExpect(jsonPath("$.message").value(ExceptionController.NOT_FOUND_MESSAGE))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(ScheduleNotFoundException.MESSAGE))
                 .andDo(print());
     }
 

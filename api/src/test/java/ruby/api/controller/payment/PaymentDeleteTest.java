@@ -11,6 +11,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.controller.ExceptionController;
+import ruby.api.exception.payment.PaymentNotFoundException;
+import ruby.api.exception.schedule.ScheduleNotFoundException;
 import ruby.core.domain.Payment;
 import ruby.core.domain.Student;
 import ruby.core.domain.enums.Course;
@@ -65,9 +67,9 @@ class PaymentDeleteTest {
 
         // when
         mockMvc.perform(delete("/payments/{id}", payment.getId() + 999))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
-                .andExpect(jsonPath("$.message").value(ExceptionController.NOT_FOUND_MESSAGE))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(PaymentNotFoundException.MESSAGE))
                 .andDo(print());
     }
 

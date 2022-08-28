@@ -36,17 +36,21 @@ public class Student extends BaseEntity{
     private List<Payment> payments;
 
     @Builder
-    public Student(String name, String email, String phoneNumber, Course course, Grade grade, String memo) {
+    public Student(String name, String email, String phoneNumber, Course course, Grade grade, String memo, int remainderCnt) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.course = course;
         this.grade = grade;
         this.memo = memo;
+        this.remainderCnt = remainderCnt;
     }
 
     public void addPayment() {
         this.remainderCnt += 4;
+    }
+    public void cancelPayment() {
+        this.remainderCnt -= 4;
     }
     public void makeSchedule() {
         this.remainderCnt--;

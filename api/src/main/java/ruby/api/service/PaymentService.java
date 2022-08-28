@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ruby.api.exception.payment.PaymentNotFoundException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.request.payment.PaymentPost;
 import ruby.api.request.payment.PaymentSearch;
@@ -29,6 +30,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final StudentRepository studentRepository;
+    private static final int REMAINDER_COUNT = 4;
 
     public void add(PaymentPost paymentPost) {
         Student student = studentRepository.findById(paymentPost.getStudentId())
@@ -48,8 +50,16 @@ public class PaymentService {
     }
 
     public void delete(long id) {
-        paymentRepository.deleteById(id);
+        Payment payment = paymentRepository.findByIdWithStudent(id)
+                .orElseThrow(PaymentNotFoundException::new);
+
+        Student student = payment.getStudent();
+        if (student.getRemainderCnt() < REMAINDER_COUNT) {
+            student.setRemainderCnt(0);
+        } else {
+            payment.getStudent().cancelPayment();
+        }
+
+        paymentRepository.delete(payment);
     }
-
-
 }

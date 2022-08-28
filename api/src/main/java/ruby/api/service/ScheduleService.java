@@ -40,7 +40,7 @@ public class ScheduleService {
         Student student = studentRepository.findById(schedulePost.getStudentId())
                 .orElseThrow(StudentNotFoundException::new);
 
-        if (student.getRemainderCnt() == 0) throw new StudentNoneRemainderCountException();
+        if (student.getRemainderCnt() <= 0) throw new StudentNoneRemainderCountException();
 
         Teacher teacher = teacherRepository.findById(schedulePost.getTeacherId())
                 .orElseThrow(TeacherNotFoundException::new);

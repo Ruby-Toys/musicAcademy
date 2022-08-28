@@ -10,6 +10,7 @@ import ruby.core.domain.Payment;
 import ruby.core.repository.custom.PaymentRepositoryCustom;
 
 import java.util.List;
+import java.util.Optional;
 
 import static ruby.core.domain.QPayment.payment;
 import static ruby.core.domain.QStudent.student;
@@ -35,6 +36,16 @@ public class PaymentRepositoryImpl implements PaymentRepositoryCustom {
                 .size();
 
         return PageableExecutionUtils.getPage(payments, pageable, () -> size);
+    }
+
+    @Override
+    public Optional<Payment> findByIdWithStudent(Long id) {
+        Payment findPayment = queryFactory.selectFrom(payment)
+                .leftJoin(payment.student, student).fetchJoin()
+                .where(payment.id.eq(id))
+                .fetchOne();
+
+        return Optional.ofNullable(findPayment);
     }
 
     private Predicate searchCondition(String word) {

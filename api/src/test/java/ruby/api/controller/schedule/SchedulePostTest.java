@@ -71,6 +71,7 @@ public class SchedulePostTest {
                 .grade(Grade.BEGINNER)
                 .phoneNumber("01011112222")
                 .memo("악기 연주에 소질이 있음")
+                .remainderCnt(4)
                 .build();
         studentRepository.save(student);
 
