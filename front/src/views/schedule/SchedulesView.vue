@@ -114,12 +114,17 @@ import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
 import axios from "axios";
 
+const getWeekText = ref(() => {
+  return getWeekOfMonth(searchForm.value.appointmentTime) === 0 ?
+      `${searchForm.value.appointmentTime.getMonth() === 0 ? 12 : searchForm.value.appointmentTime.getMonth()}월 ` + '5주차'
+      : `${searchForm.value.appointmentTime.getMonth() + 1}월 ${getWeekOfMonth(searchForm.value.appointmentTime)}주차`
+});
 const searchForm = ref({
   course: COURSE.PIANO.value,
   appointmentTime: new Date()
 })
 const schedules = ref([]);
-const weekText = ref(`${searchForm.value.appointmentTime.getMonth() + 1}월 ${getWeekOfMonth(searchForm.value.appointmentTime)}주차`);
+const weekText = ref(getWeekText.value());
 const dialogFormVisible = ref(false);
 const scheduleFormState = ref(false);   // true : 등록, false : 변경
 const scheduleForm = reactive({
@@ -212,7 +217,7 @@ const getListApi = () => {
       .then(res => {
         schedules.value = [];
         mainCalendar.clear();
-        weekText.value = `${searchForm.value.appointmentTime.getMonth() + 1}월 ${getWeekOfMonth(searchForm.value.appointmentTime)}주차`;
+        weekText.value = getWeekText.value();
         res.data.contents.forEach(schedule => {
           schedules.value.push({
             id: schedule.id,

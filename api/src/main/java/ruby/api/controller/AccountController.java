@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ruby.api.request.account.AccountLogin;
-import ruby.api.security.LoginAccount;
-import ruby.api.security.UserAccount;
 import ruby.api.service.AccountService;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class AccountController {
     }
 
     @PostMapping("/loginCheck")
-    public boolean check(@LoginAccount UserAccount account) {
-        return account != null;
+    public boolean check(Principal principal) {
+        return principal != null;
     }
 }

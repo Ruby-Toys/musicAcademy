@@ -3,6 +3,7 @@ package ruby.core.domain;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.lang.Nullable;
 import ruby.core.domain.enums.Course;
 import ruby.core.domain.enums.Grade;
 
@@ -26,6 +27,7 @@ public class Student extends BaseEntity{
     @Enumerated(value = EnumType.STRING)
     private Grade grade;
     private String memo;
+    private int remainderCnt;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Schedule> schedules;
@@ -41,5 +43,15 @@ public class Student extends BaseEntity{
         this.course = course;
         this.grade = grade;
         this.memo = memo;
+    }
+
+    public void addPayment() {
+        this.remainderCnt += 4;
+    }
+    public void makeSchedule() {
+        this.remainderCnt--;
+    }
+    public void cancelSchedule() {
+        this.remainderCnt++;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ruby.api.exception.schedule.CourseDiscordException;
 import ruby.api.exception.schedule.ScheduleExistsTimeException;
 import ruby.api.exception.schedule.ScheduleNotFoundException;
+import ruby.api.exception.student.StudentNoneRemainderCountException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePatch;
@@ -24,6 +25,7 @@ import ruby.core.repository.TeacherRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +39,9 @@ public class ScheduleService {
     public Schedule add(SchedulePost schedulePost) {
         Student student = studentRepository.findById(schedulePost.getStudentId())
                 .orElseThrow(StudentNotFoundException::new);
+
+        if (student.getRemainderCnt() == 0) throw new StudentNoneRemainderCountException();
+
         Teacher teacher = teacherRepository.findById(schedulePost.getTeacherId())
                 .orElseThrow(TeacherNotFoundException::new);
 
@@ -56,7 +61,10 @@ public class ScheduleService {
                 .teacher(teacher)
                 .state(ScheduleState.NOT_STARTED)
                 .build();
-        return scheduleRepository.save(schedule);
+
+        Schedule savedSchedule = scheduleRepository.save(schedule);
+        student.makeSchedule();
+        return savedSchedule;
     }
 
     @Transactional(readOnly = true)
@@ -106,6 +114,10 @@ public class ScheduleService {
     }
 
     public void delete(Long id) {
-        scheduleRepository.deleteById(id);
+        Schedule schedule = scheduleRepository.findByIdWithStudent(id)
+                .orElseThrow(ScheduleNotFoundException::new);
+
+        schedule.getStudent().cancelSchedule();
+        scheduleRepository.delete(schedule);
     }
 }

@@ -39,6 +39,7 @@ public class PaymentService {
                 .amount(paymentPost.getAmount())
                 .build();
         paymentRepository.save(payment);
+        student.addPayment();
     }
 
     public Page<Payment> getList(PaymentSearch search) {

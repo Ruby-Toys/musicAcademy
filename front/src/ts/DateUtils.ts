@@ -3,7 +3,8 @@ const getWeekOfMonth = (dateFrom = new Date()) => {
     const day = dateFrom.getDate();
     const startOfMonth = new Date(currentDate.setDate(1));
     const weekDay = startOfMonth.getDay();
-    return parseInt(String(((weekDay - 1) + day) / 7)) + 1;
+
+    return parseInt(String(((weekDay - 1) + day) / 7));
 }
 
 const localDateTimeFormatter = (dateFrom = new Date()) => {
