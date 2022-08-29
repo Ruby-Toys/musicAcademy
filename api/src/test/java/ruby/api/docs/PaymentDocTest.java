@@ -15,7 +15,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.request.payment.PaymentPost;
-import ruby.api.valid.validator.ScheduleStateValidator;
 import ruby.core.domain.Payment;
 import ruby.core.domain.Student;
 import ruby.core.domain.enums.Course;
@@ -129,8 +128,8 @@ public class PaymentDocTest {
                 .andExpect(status().isOk())
                 .andDo(document("payment-getList",
                         requestParameters(
-                                parameterWithName("word").description("검색어"),
-                                parameterWithName("page").description("페이지 번호")
+                                parameterWithName("word").description("검색어").optional(),
+                                parameterWithName("page").description("페이지 번호").optional()
                         ),
                         responseFields(
                                 fieldWithPath("page").description("조회 페이지"),
@@ -173,10 +172,5 @@ public class PaymentDocTest {
                                 parameterWithName("id").description("순번")
                         )
                 ));
-    }
-
-
-    private String getScheduleStateConstraintString() {
-        return ScheduleStateValidator.getRegexpState().replaceAll("\\|", " / ");
     }
 }

@@ -95,7 +95,7 @@ public class StudentDocTest {
                                         .attributes(key("constraint").value(getCourseConstraintString())),
                                 fieldWithPath("grade").description("수강등급")
                                         .attributes(key("constraint").value(getGradeConstraintString())),
-                                fieldWithPath("memo").description("메모")
+                                fieldWithPath("memo").description("메모").optional()
                         )
                 ));
     }
@@ -129,8 +129,8 @@ public class StudentDocTest {
                 .andExpect(status().isOk())
                 .andDo(document("student-getList",
                         requestParameters(
-                                parameterWithName("word").description("검색어"),
-                                parameterWithName("page").description("페이지 번호")
+                                parameterWithName("word").description("검색어").optional(),
+                                parameterWithName("page").description("페이지 번호").optional()
                         ),
                         responseFields(
                                 fieldWithPath("page").description("조회 페이지"),

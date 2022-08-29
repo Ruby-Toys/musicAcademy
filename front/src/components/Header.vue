@@ -14,6 +14,7 @@
     </el-sub-menu>
     <el-menu-item index="4" @click="movePayments">결제 내역</el-menu-item>
     <div class="flex-grow" />
+    <span @click="docs">API Docs</span>
     <span>계정 관리</span>
     <span @click="logout">로그아웃</span>
   </el-menu>
@@ -51,6 +52,9 @@ const logout = () => {
         router.replace({ name: "home" });
       });
 };
+const docs = () => {
+  location.href = "http://localhost:8080/docs/index.html"
+}
 </script>
 
 <style scoped>
