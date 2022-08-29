@@ -15,13 +15,17 @@ import static javax.persistence.FetchType.LAZY;
 @Getter @Setter
 public class Payment extends BaseEntity{
 
+    private String tid;
+    private String detail;
     private Long amount;
 
     @ManyToOne(fetch = LAZY)
     private Student student;
 
     @Builder
-    public Payment(Long amount, Student student) {
+    public Payment(String tid, String detail, Long amount, Student student) {
+        this.tid = tid;
+        this.detail = detail;
         this.amount = amount;
         this.student = student;
     }

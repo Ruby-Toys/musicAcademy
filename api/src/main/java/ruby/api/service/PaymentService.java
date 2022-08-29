@@ -8,18 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ruby.api.exception.payment.PaymentNotFoundException;
 import ruby.api.exception.student.StudentNotFoundException;
+import ruby.api.response.kakao.ApproveResponse;
 import ruby.api.request.payment.PaymentPost;
 import ruby.api.request.payment.PaymentSearch;
-import ruby.api.request.student.StudentSearch;
-import ruby.api.utils.DateUtils;
 import ruby.core.domain.Payment;
 import ruby.core.domain.Student;
 import ruby.core.repository.PaymentRepository;
 import ruby.core.repository.StudentRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 import static java.lang.Math.max;
 
@@ -61,5 +56,24 @@ public class PaymentService {
         }
 
         paymentRepository.delete(payment);
+    }
+
+    public void add(ApproveResponse approveResponse) {
+        String tid = approveResponse.getTid();
+        Long studentId = Long.parseLong(approveResponse.getPartner_user_id());
+        String detail = approveResponse.getItem_name();
+        Long amount = approveResponse.getAmount().getTotal();
+
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(StudentNotFoundException::new);
+
+        Payment payment = Payment.builder()
+                .tid(tid)
+                .detail(detail)
+                .student(student)
+                .amount(amount)
+                .build();
+        paymentRepository.save(payment);
+        student.addPayment();
     }
 }

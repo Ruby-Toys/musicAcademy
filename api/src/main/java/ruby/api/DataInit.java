@@ -22,7 +22,6 @@ import java.util.stream.IntStream;
  */
 @RequiredArgsConstructor
 @Component
-@Profile("local")
 public class DataInit implements CommandLineRunner {
 
     private final AccountRepository accountRepository;

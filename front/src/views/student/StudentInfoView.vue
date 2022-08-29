@@ -139,18 +139,34 @@ const deleteApi = () => {
 const postPaymentApi = () => {
 
   if (confirm("결제를 진행하시겠습니까?")) {
-    axios.post("/api/payments", {
-          studentId: student.value.id,
-          amount: amount.value
+    // axios.post("/api/payments", {
+    //       studentId: student.value.id,
+    //       amount: amount.value
+    //     })
+    //     .then(res => {
+    //       alert("결제가 완료되었습니다.");
+    //       dialogFormVisible.value = false;
+    //     })
+    //     .catch((err) => {
+    //       const result = err.response.data;
+    //       console.log(result);
+    //       alert(result.message);
+    //     });
+
+
+    axios.get("/api/kakaoPay/ready", {
+          params: {
+            studentId: student.value.id,
+            amount: amount.value
+          }
         })
-        .then(res => {
-          alert("결제가 완료되었습니다.");
-          dialogFormVisible.value = false;
-        })
-        .catch((err) => {
-          const result = err.response.data;
-          console.log(result);
-          alert(result.message);
+        .then((res) => {
+          const width = 600;
+          const height = 800;
+          const popupX = (window.screen.width / 2)   - (width / 2);
+          const popupY = (window.screen.height / 2) - (height / 2);
+
+          window.open(res.data.next_redirect_pc_url,'',`width=${width}, height=${height}, left=${popupX}, top=${popupY}`);
         });
   }
 }

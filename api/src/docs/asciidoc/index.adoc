@@ -192,3 +192,23 @@ include::{snippets}/payment-delete/http-request.adoc[]
 include::{snippets}/payment-delete/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/payment-delete/http-response.adoc[]
+
+
+
+== KakaoPay
+
+=== 카카오페이 결제 요청 화면 호출
+
+==== 요청
+include::{snippets}/kakaoPay-ready/http-request.adoc[]
+include::{snippets}/kakaoPay-ready/request-parameters.adoc[]
+==== 응답
+include::{snippets}/kakaoPay-ready/http-response.adoc[]
+include::{snippets}/kakaoPay-ready/response-fields.adoc[]
+
+
+=== 카카오페이 결제 완료
+
+==== 요청
+include::{snippets}/kakaoPay-success/http-request.adoc[]
+include::{snippets}/kakaoPay-success/request-parameters.adoc[]

@@ -12,6 +12,18 @@ const moveLogin = () => {
         router.push({ name: res.data ? "schedules" : "login"});
       });
 };
+
+const kakaoPay = () => {
+  axios.post("/api/kakaoPay")
+      .then((res) => {
+        const width = 600;
+        const height = 800;
+        const popupX = (window.screen.width / 2)   - (width / 2);
+        const popupY = (window.screen.height / 2) - (height / 2);
+
+        window.open(res.data,'',`width=${width}, height=${height}, left=${popupX}, top=${popupY}`);
+      });
+};
 </script>
 
 <style scoped>
