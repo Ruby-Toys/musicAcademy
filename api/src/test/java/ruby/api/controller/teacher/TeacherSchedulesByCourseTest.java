@@ -109,7 +109,7 @@ class TeacherSchedulesByCourseTest {
     }
 
     @Test
-    @DisplayName("잘못된 수강과목으로 수강생의 스케쥴 조회")
+    @DisplayName("잘못된 수강과목으로 선생님의 스케쥴 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
     void schedulesByCourse_wrongCourse() throws Exception {
         // when
@@ -123,7 +123,7 @@ class TeacherSchedulesByCourseTest {
     }
 
     @Test
-    @DisplayName("수강과목으로 수강생의 스케줄 조회")
+    @DisplayName("수강과목으로 선생님의 스케줄 조회")
     @WithMockUser(username = "test", roles = "MANAGER")
     void schedulesByCourse() throws Exception {
         // when

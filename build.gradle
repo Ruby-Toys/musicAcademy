@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.7.3'
     id 'java'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 repositories {
@@ -62,6 +63,33 @@ project(":core") {
 }
 
 project(":api") {
+    configurations {
+        asciidoctorExt
+    }
+
+    ext {
+        set('snippetsDir', file("build/generated-snippets"))
+    }
+
+    test {
+        outputs.dir snippetsDir
+    }
+
+    asciidoctor {
+        inputs.dir snippetsDir
+        configurations 'asciidoctorExt'
+        dependsOn test
+    }
+
+    bootJar {
+        dependsOn asciidoctor
+
+        copy {
+            from asciidoctor.outputDir
+            into "src/main/resources/static/docs"
+        }
+    }
+
     dependencies {
         implementation project(':core')
         // web
@@ -76,5 +104,8 @@ project(":api") {
         // email
         implementation 'org.springframework.boot:spring-boot-starter-mail'
         implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+        // rest docs
+        asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+        testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     }
 }

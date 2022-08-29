@@ -12,12 +12,12 @@ public class ScheduleStateValidator implements ConstraintValidator<ScheduleState
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        Pattern pattern = Pattern.compile(getRegexpCourse());
+        Pattern pattern = Pattern.compile(getRegexpState());
         Matcher matcher = pattern.matcher(value);
         return matcher.matches();
     }
 
-    public static String getRegexpCourse() {
+    public static String getRegexpState() {
         ScheduleState[] scheduleStates = ScheduleState.values();
         StringBuilder builder = new StringBuilder();
         for (ScheduleState state : scheduleStates) {

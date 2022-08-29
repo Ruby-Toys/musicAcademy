@@ -56,7 +56,7 @@ public class TeacherPatchTest {
 
 
     @Test
-    @DisplayName("잘못된 필드로 수강생 정보 수정")
+    @DisplayName("잘못된 필드로 선생님 정보 수정")
     void edit_wrongField() throws Exception {
         // given
         Teacher teacher = teacherRepository.findAll().get(0);
@@ -83,7 +83,7 @@ public class TeacherPatchTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 수강생 정보 수정")
+    @DisplayName("존재하지 않는 선생님 정보 수정")
     void edit_noneTeacher() throws Exception {
         // given
         Teacher teacher = teacherRepository.findAll().get(0);
@@ -112,7 +112,7 @@ public class TeacherPatchTest {
     }
 
     @Test
-    @DisplayName("수강생 정보 수정")
+    @DisplayName("선생님 정보 수정")
     void edit() throws Exception {
         // given
         Teacher teacher = teacherRepository.findAll().get(0);
