@@ -88,4 +88,6 @@ class KakaoPayTest {
                 )
                 .andDo(print());
     }
+    // 827022744220
+    // a160a5d3-9a4f-40a5-ac82-2889e43ab6db
 }

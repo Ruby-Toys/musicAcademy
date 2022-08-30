@@ -1,4 +1,4 @@
-= Music Roost API
+= Music Academy API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
