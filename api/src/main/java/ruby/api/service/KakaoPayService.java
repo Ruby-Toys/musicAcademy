@@ -2,6 +2,7 @@ package ruby.api.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import ruby.api.config.KakaoPayProperties;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.response.kakao.ApproveResponse;
 import ruby.api.response.kakao.ReadyResponse;
@@ -22,8 +24,12 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 public class KakaoPayService {
 
-    private static final String HOST = "https://kapi.kakao.com";
-    private static final String adminKey = "ee17c10a1aa0f89ce62625b05ac109c6";
+//    @Value("${kakaopay.host}")
+//    private String host;
+//    @Value("${kakaopay.adminkey}")
+//    private String adminKey;
+
+    private final KakaoPayProperties kakaoPayProperties;
     private final HttpSession httpSession;
 
     private final StudentRepository studentRepository;
@@ -50,7 +56,7 @@ public class KakaoPayService {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, this.getHeaders());
 
         RestTemplate template = new RestTemplate();
-        String url = HOST + "/v1/payment/ready";
+        String url = kakaoPayProperties.getHost() + "/v1/payment/ready";
         ReadyResponse readyResponse = template.postForObject(url, requestEntity, ReadyResponse.class);
 
         httpSession.setAttribute("partner_order_id", partner_order_id);
@@ -73,13 +79,13 @@ public class KakaoPayService {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, this.getHeaders());
 
         RestTemplate template = new RestTemplate();
-        String url = HOST + "/v1/payment/approve";
+        String url = kakaoPayProperties.getHost() + "/v1/payment/approve";
         return template.postForObject(url, requestEntity, ApproveResponse.class);
     }
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + adminKey);
+        headers.set("Authorization", "KakaoAK " + kakaoPayProperties.getAdminKey());
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
         headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 

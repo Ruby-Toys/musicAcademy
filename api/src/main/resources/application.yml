@@ -34,3 +34,7 @@ logging:
       springframework:
         boot:
           autoconfigure: ERROR
+
+kakaoPay:
+  host: ${KAKAO_PAY_HOST}
+  adminKey : ${KAKAO_PAY_ADMINKEY}
