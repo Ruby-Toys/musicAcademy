@@ -2,12 +2,10 @@ package ruby.api.request.schedule;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import ruby.api.valid.*;
-import ruby.core.domain.enums.Course;
-import ruby.core.domain.enums.Grade;
+import ruby.api.valid.LocalDateTimePattern;
+import ruby.api.valid.ScheduleStatePattern;
 
-@Getter @Setter
+@Getter
 @Builder
 public class SchedulePatch {
 

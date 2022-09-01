@@ -1,14 +1,12 @@
 package ruby.api.response.student;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import ruby.core.domain.Student;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@NoArgsConstructor
 public class StudentsByCourseResponse {
 
     private List<StudentItem> contents;

@@ -1,7 +1,6 @@
 package ruby.api.response.student;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import ruby.core.domain.Student;
 
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@NoArgsConstructor
 public class StudentsResponse {
 
     private List<StudentResponse> contents;

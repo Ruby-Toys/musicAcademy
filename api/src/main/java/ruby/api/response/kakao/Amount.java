@@ -1,8 +1,9 @@
 package ruby.api.response.kakao;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
 public class Amount {
 
     private Long total;

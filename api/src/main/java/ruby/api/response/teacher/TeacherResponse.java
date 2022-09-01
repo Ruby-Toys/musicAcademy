@@ -2,14 +2,11 @@ package ruby.api.response.teacher;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.Setter;
-import ruby.core.domain.Account;
 import ruby.core.domain.Teacher;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
-@Getter @Setter
+@Getter
 public class TeacherResponse {
 
     private Long id;

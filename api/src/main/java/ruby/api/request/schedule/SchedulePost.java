@@ -2,10 +2,9 @@ package ruby.api.request.schedule;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import ruby.api.valid.LocalDateTimePattern;
 
-@Getter @Setter
+@Getter
 @Builder
 public class SchedulePost {
 

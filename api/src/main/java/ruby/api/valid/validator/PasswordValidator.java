@@ -1,20 +1,19 @@
 package ruby.api.valid.validator;
 
-import ruby.api.valid.LocalDatePattern;
+import ruby.api.valid.PasswordPattern;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LocalDateValidator implements ConstraintValidator<LocalDatePattern, String> {
+public class PasswordValidator implements ConstraintValidator<PasswordPattern, String> {
 
-    private static final String LOCAL_DATE_REGEXP = "\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12]\\d|3[01])";
-
+    private static final String PASSWORD_REGEXP = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,50}$";
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        Pattern pattern = Pattern.compile(LOCAL_DATE_REGEXP);
+        Pattern pattern = Pattern.compile(PASSWORD_REGEXP);
         Matcher matcher = pattern.matcher(value);
         return matcher.matches();
     }

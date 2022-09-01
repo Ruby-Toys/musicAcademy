@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.3'
     id 'java'
     id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'jacoco'
 }
 
 repositories {
@@ -20,6 +21,7 @@ subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.asciidoctor.jvm.convert'
+    apply plugin: 'jacoco'
 
     configurations {
         compileOnly {
@@ -61,6 +63,12 @@ project(":core") {
         annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
         annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
     }
+
+    // build tools 의 run 을 IntelliJ 로 설정할 때에는 추가
+    // IntelliJ 로 설정했을 때에는 컴파일 시점에 해당 경로에 Q클래스가 생성되므로 clean 시 해당 경로에 있는 Q클래스를 지우기 위함
+//    clean {
+//        delete file('src/main/generated')
+//    }
 }
 
 project(":api") {
@@ -92,7 +100,11 @@ project(":api") {
     }
 
     test {
+        useJUnitPlatform()
         outputs.dir snippetsDir
+        jacoco {
+            destinationFile = file("$buildDir/jacoco/jacoco.exec")
+        }
     }
 
     asciidoctor {
@@ -106,6 +118,47 @@ project(":api") {
         copy {
             from asciidoctor.outputDir
             into "src/main/resources/static/docs"
+        }
+    }
+
+    jacoco {
+        toolVersion = '0.8.5'
+    }
+
+    jacocoTestReport {
+        reports {
+            // 원하는 리포트를 켜고 끌 수 있습니다.
+            html.enabled true
+            xml.enabled false
+            csv.enabled false
+
+//  각 리포트 타입 마다 리포트 저장 경로를 설정할 수 있습니다.
+//  html.destination file("$buildDir/jacocoHtml")
+//  xml.destination file("$buildDir/jacoco.xml")
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        // 이 커버리지 기준은 이 글의 맨 아래에서 다시 설명하겠습니다.
+        violationRules {
+            rule {
+                element = 'CLASS'
+
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.80
+                }
+
+                // 카카오페이, 메일서비스 관련 제외
+                excludes = [
+                        'ruby.api.response.kakao',
+                        'ruby.api.service.MailService',
+                        'ruby.api.service.KakaoPayService',
+                        'ruby.api.service.PaymentService',
+                        'ruby.api.scheduler'
+                ]
+            }
         }
     }
 }

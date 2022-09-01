@@ -19,7 +19,6 @@ import ruby.core.domain.Account;
 import ruby.core.domain.enums.AccountRole;
 import ruby.core.repository.AccountRepository;
 
-import javax.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -28,23 +27,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AccountService implements UserDetailsService {
+public class AccountService  {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final HttpSession httpSession;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountRepository.findByName(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-
-        // Principal 대상 클래스인 UserAccount 객체 반환
-        return new UserAccount(account);
-    }
 
     @Transactional
-    public Account signUp(String name, String password) {
+    public void signUp(String name, String password) {
         Optional<Account> optionalAccount = accountRepository.findByName(name);
         if (optionalAccount.isPresent()) throw new UserSameException();
 
@@ -54,7 +43,7 @@ public class AccountService implements UserDetailsService {
                 .role(AccountRole.WAITING)
                 .build();
 
-        return accountRepository.save(account);
+        accountRepository.save(account);
     }
 
     public void login(AccountLogin accountLogin) {
@@ -77,12 +66,10 @@ public class AccountService implements UserDetailsService {
     }
 
     private void setAuthentication(Account account) {
-        UserAccount userAccount = new UserAccount(account);
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(
-                        userAccount, account.getPassword(), authorities(account.getRole()));
+                        new UserAccount(account), account.getPassword(), authorities(account.getRole()));
 
-        httpSession.setAttribute("account", userAccount);
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 

@@ -6,9 +6,5 @@ public abstract class BusinessException extends RuntimeException{
         super(message);
     }
 
-    public BusinessException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public abstract int getStatusCode();
 }

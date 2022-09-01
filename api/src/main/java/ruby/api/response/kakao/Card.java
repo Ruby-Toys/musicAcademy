@@ -1,8 +1,10 @@
 package ruby.api.response.kakao;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class Card {
 
     private String purchase_corp;

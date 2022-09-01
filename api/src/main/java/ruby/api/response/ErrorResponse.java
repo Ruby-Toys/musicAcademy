@@ -2,7 +2,6 @@ package ruby.api.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
@@ -17,11 +16,11 @@ import java.util.Map;
  *     }
  * }
  */
-@Getter @Setter
+@Getter
 public class ErrorResponse {
 
-    private final int code;
-    private final String message;
+    private int code;
+    private String message;
     private Map<String, String> validation;
 
     @Builder

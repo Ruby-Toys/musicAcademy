@@ -2,12 +2,11 @@ package ruby.api.response.schedule;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.Setter;
 import ruby.core.domain.Schedule;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
 public class ScheduleResponse {
 
     private Long id;

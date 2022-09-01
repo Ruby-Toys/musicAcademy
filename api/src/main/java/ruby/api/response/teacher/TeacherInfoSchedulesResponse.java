@@ -2,7 +2,6 @@ package ruby.api.response.teacher;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.Setter;
 import ruby.core.domain.Schedule;
 
 import java.time.LocalDateTime;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter
 public class TeacherInfoSchedulesResponse {
 
     private List<ScheduleItem> contents;

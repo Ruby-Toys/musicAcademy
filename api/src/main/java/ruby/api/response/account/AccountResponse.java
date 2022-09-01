@@ -1,12 +1,11 @@
 package ruby.api.response.account;
 
 import lombok.Getter;
-import lombok.Setter;
 import ruby.core.domain.Account;
 
 import java.time.format.DateTimeFormatter;
 
-@Getter @Setter
+@Getter
 public class AccountResponse {
 
     private String name;

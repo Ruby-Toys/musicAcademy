@@ -9,7 +9,7 @@ import axios from "axios";
 const moveLogin = () => {
   axios.post("/api/loginCheck")
       .then((res) => {
-        router.push({ name: res.data ? "schedules" : "login"});
+        router.push({ name: res.data.state ? "schedules" : "login"});
       });
 };
 

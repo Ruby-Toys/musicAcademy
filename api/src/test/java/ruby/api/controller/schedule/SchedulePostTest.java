@@ -16,6 +16,7 @@ import ruby.api.exception.schedule.CourseDiscordException;
 import ruby.api.exception.schedule.ScheduleExistsTimeException;
 import ruby.api.exception.schedule.ScheduleNotEqualsDayException;
 import ruby.api.exception.PeriodException;
+import ruby.api.exception.student.StudentNoneRemainderCountException;
 import ruby.api.exception.student.StudentNotFoundException;
 import ruby.api.exception.teacher.TeacherNotFoundException;
 import ruby.api.request.schedule.SchedulePost;
@@ -281,6 +282,48 @@ public class SchedulePostTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.message").value(ScheduleNotEqualsDayException.MESSAGE))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("스케줄 등록 가능 횟수가 0일 때 등록")
+    void postSchedule_noneRemainderCnt() throws Exception {
+        // given
+        Student student = Student.builder()
+                .name("student")
+                .course(Course.VIOLIN)
+                .email("student@naver.com")
+                .grade(Grade.BEGINNER)
+                .phoneNumber("01011112222")
+                .memo("악기 연주에 소질이 있음")
+                .build();
+        studentRepository.save(student);
+
+        Teacher teacher = Teacher.builder()
+                .name("teacher")
+                .course(Course.VIOLIN)
+                .email("teacher@naver.com")
+                .phoneNumber("01011112222")
+                .build();
+        teacherRepository.save(teacher);
+
+        LocalDateTime now = LocalDate.now().atTime(20, 0);
+        DateTimeFormatter formatter = DateUtils.localDateTimeFormatter();
+        SchedulePost schedulePost = SchedulePost.builder()
+                .start(now.format(formatter))
+                .end(now.plusHours(1).format(formatter))
+                .studentId(student.getId())
+                .teacherId(teacher.getId())
+                .build();
+
+        // when
+        mockMvc.perform(post("/schedules")
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(schedulePost))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(StudentNoneRemainderCountException.MESSAGE))
                 .andDo(print());
     }
 

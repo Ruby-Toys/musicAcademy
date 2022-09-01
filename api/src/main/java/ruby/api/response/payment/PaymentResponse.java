@@ -2,12 +2,11 @@ package ruby.api.response.payment;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.Setter;
 import ruby.core.domain.Payment;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
 public class PaymentResponse {
 
     private Long id;

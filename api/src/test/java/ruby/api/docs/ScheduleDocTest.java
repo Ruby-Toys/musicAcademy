@@ -143,7 +143,7 @@ public class ScheduleDocTest {
         List<Schedule> schedules = IntStream.range(0, 5)
                 .mapToObj(idx -> {
                     LocalDateTime start = LocalDateTime.of(
-                            now.getYear(), now.getMonthValue(), (idx + 1) * 6, 10 + idx, 0);
+                            now.getYear(), now.getMonthValue(), now.getDayOfMonth() + (idx * 6), 10 + idx, 0);
 
                     return Schedule.builder()
                             .start(start)

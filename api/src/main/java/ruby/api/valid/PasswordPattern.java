@@ -1,6 +1,6 @@
 package ruby.api.valid;
 
-import ruby.api.valid.validator.LocalDateValidator;
+import ruby.api.valid.validator.PasswordValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,11 +13,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target(FIELD)
 @Retention(RUNTIME)
-@Constraint(validatedBy = LocalDateValidator.class)
+@Constraint(validatedBy = PasswordValidator.class)
 @Documented
-public @interface LocalDatePattern {
+public @interface PasswordPattern {
 
-    String MESSAGE = "날짜 형식이 올바르지 않습니다.";
+    String MESSAGE = "비밀번호는 8~50자 영문, 숫자, 특수문자만 입력할 수 있습니다. 비밀번호는 적어도 하나 이상의 영문, 숫자, 특수문자를 모두 포함해야 합니다.";
 
     String message() default MESSAGE;
 
